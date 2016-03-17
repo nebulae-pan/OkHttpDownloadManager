@@ -52,6 +52,10 @@ public class DownloadManager implements DownloadTask.CompletedListener
         executorService.execute(taskList.get(index));
     }
 
+    /**
+     * Can get downloading task list
+     * @return
+     */
     public LinkedList<TransferTask> getTaskList()
     {
         return taskList;
@@ -88,11 +92,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
         taskList = new LinkedList<>();
         this.nThread = nThread;
         downloadDao = getDaoSession(context).getDownloadEntityDao();
-        /*//获得OpenHelper(继承自SQLiteOpenHelper）
-        DaoMaster.OpenHelper openHelper = new DaoMaster.DevOpenHelper(context,"downloadDB",null);
-        //获得DaoMaster
-        DaoMaster daoMaster = new DaoMaster(openHelper.getWritableDatabase());
-        downloadDao = daoMaster.newSession().getDownloadEntityDao();*/
     }
 
     private DownloadManager(int nThread)
@@ -150,7 +149,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     @Override
     public void isFinished(String url)
     {
-        Log.v("task finished", "任务" + url + "下载完成");
+        Log.v("task finished", "task" + url + "download completed");
         DownloadTask task = getTask(url);
         if (task != null)
             taskList.remove(task);
@@ -206,7 +205,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     }
 
     /**
-     * 取得DaoMaster
+     * get DaoMaster
      *
      * @param context
      * @return
@@ -221,7 +220,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     }
 
     /**
-     * 取得DaoSession
+     * get DaoSession
      *
      * @param context
      * @return
