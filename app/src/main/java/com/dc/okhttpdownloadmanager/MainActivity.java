@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity
         listView = (ListView) findViewById(R.id.listView);
         downloadManager = DownloadManager.getInstance();
         handler = new InnerHandler(this);
+        setListViewAdapter();
     }
 
     void setListViewAdapter()
@@ -44,6 +47,25 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.action_add_task:
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     static class InnerHandler extends Handler
     {
         WeakReference<MainActivity> reference;
@@ -51,7 +73,7 @@ public class MainActivity extends AppCompatActivity
 
         public InnerHandler(MainActivity activity)
         {
-            this.reference = new WeakReference<MainActivity>(activity);
+            this.reference = new WeakReference<>(activity);
             activity = reference.get();
         }
 
