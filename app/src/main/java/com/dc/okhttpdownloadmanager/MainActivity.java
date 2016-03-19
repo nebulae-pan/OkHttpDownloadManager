@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +23,7 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements TaskConfirmDialog.InputCompletedListener
 {
     private ListView listView;
     DownloadManager downloadManager;
@@ -34,8 +35,10 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         listView = (ListView) findViewById(R.id.listView);
-        downloadManager = DownloadManager.getInstance();
+        downloadManager = DownloadManager.getInstance(this,handler);
         handler = new InnerHandler(this);
         setListViewAdapter();
     }
@@ -60,10 +63,19 @@ public class MainActivity extends AppCompatActivity
         switch(item.getItemId())
         {
             case R.id.action_add_task:
-
+                TaskConfirmDialog dialogFragment=new TaskConfirmDialog();
+                android.app.FragmentManager manager=getFragmentManager();
+                dialogFragment.show(manager,"");
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void inputCompleted(String url, String fileName)
+    {
+        downloadManager.addTask(url);
+        adapter.notifyDataSetChanged();
     }
 
     static class InnerHandler extends Handler

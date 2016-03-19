@@ -196,7 +196,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     protected void ifNeedStopUpdateUI()
     {
-        mHandler.sendEmptyMessage(1);//更新界面
+        mHandler.sendEmptyMessage(1);//update interface
         for (TransferTask task : taskList) {
             if (task.getState() == LoadState.DOWNLOADING)
                 return;
