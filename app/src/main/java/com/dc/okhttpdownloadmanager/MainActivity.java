@@ -12,11 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dc.downloadmanager.DownloadManager;
+import com.dc.downloadmanager.LoadState;
 import com.dc.downloadmanager.TransferTask;
 
 import java.lang.ref.WeakReference;
@@ -35,10 +37,10 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         listView = (ListView) findViewById(R.id.listView);
-        downloadManager = DownloadManager.getInstance(this,handler);
+        downloadManager = DownloadManager.getInstance(this.getApplicationContext(), handler);
         handler = new InnerHandler(this);
         setListViewAdapter();
     }
@@ -53,19 +55,18 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.main_menu,menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch(item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.action_add_task:
-                TaskConfirmDialog dialogFragment=new TaskConfirmDialog();
-                android.app.FragmentManager manager=getFragmentManager();
-                dialogFragment.show(manager,"");
+                TaskConfirmDialog dialogFragment = new TaskConfirmDialog();
+                android.app.FragmentManager manager = getFragmentManager();
+                dialogFragment.show(manager, "");
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         public InnerHandler(MainActivity activity)
         {
             this.reference = new WeakReference<>(activity);
-            activity = reference.get();
+            this.activity = reference.get();
         }
 
         @Override
@@ -142,6 +143,10 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
             ((TextView) convertView.findViewById(R.id.title)).setText(tf.getFileName());
             ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int) (tf.getCompletedSize() / tf
                     .getTaskSize()));
+            if (tf.getState() == LoadState.PAUSE)
+                ((Button) convertView.findViewById(R.id.operation)).setText("start");
+            if (tf.getState() == LoadState.DOWNLOADING)
+                ((Button) convertView.findViewById(R.id.operation)).setText("pause");
             return convertView;
         }
     }
