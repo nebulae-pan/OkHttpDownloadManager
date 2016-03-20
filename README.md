@@ -1,8 +1,23 @@
 # OkHttpDownloadManager
-* simple file download manager
+##introduce
+* a simple file download manager developed by okhttp
+* support breakpoint download
 
 ##usage
-first,initial download manager at Appliction or use this.getApplicationContext in Activity.
-  DownloadManager.getInstance(this.getApplicationContext(), handler);
+firstly,initial download manager use this.getApplicationContext() in Activity class.
+
+    DownloadManager.getInstance(this.getApplicationContext(), handler);
 or in Application class.
-  DownloadManager.getInstance(this, handler);
+
+    DownloadManager.getInstance(this, handler);
+handler is create at UI thread , and you can update UI by this paramter.
+    
+After initialize , use getInstance() in anywhere you will get instance.
+
+    DownloadManager manager = DownloadManager.getInstance();
+
+if you need show download tasks infomation,you can get downloading tasks by
+
+    downloadManager.getTaskList();
+
+return value is a list consist by class TranferTask , can use as paramter to ListView/RecyclerView's Adapater.
