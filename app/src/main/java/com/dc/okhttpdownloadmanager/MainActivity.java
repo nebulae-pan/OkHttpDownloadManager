@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
             ((TextView) convertView.findViewById(R.id.title)).setText(tf.getFileName());
             ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int)(100*tf.getCompletedSize() / tf
                     .getTaskSize()));
+
             if (tf.getState() == LoadState.PAUSE)
             {
                 ((Button) convertView.findViewById(R.id.operation)).setText("start");

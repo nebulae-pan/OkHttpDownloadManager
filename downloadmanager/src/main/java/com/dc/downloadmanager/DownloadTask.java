@@ -104,7 +104,6 @@ public class DownloadTask extends TransferTask
                     updateCompleteSize();
                 }
                 updateCompleteSize();
-                Log.v("num", "complete:" + completedSize + ",,tasksize" + taskSize);
                 if (state == LoadState.PAUSE) {
                     return;
                 }

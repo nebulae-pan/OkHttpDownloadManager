@@ -70,7 +70,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
         ifNeedStopUpdateUI();
     }
 
-
     public void cancelTask(String url)
     {
         DownloadTask task = getTask(url);

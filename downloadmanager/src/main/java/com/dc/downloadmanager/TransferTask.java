@@ -77,7 +77,4 @@ abstract public class TransferTask implements Runnable
 
     @Override
     abstract public void run();
-    //abstract public void reStartTask(String url);
-
-    //abstract public void cancelTask(String url);
 }
