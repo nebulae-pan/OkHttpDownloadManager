@@ -24,7 +24,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
     String downLoadPath = "";
 
     private int nThread;
-    private static final String TAG = "DownLoadManager";
 
     final Object updateLock = new Object();//更新界面进程的互斥锁
     boolean isUpdating = false;
@@ -32,24 +31,24 @@ public class DownloadManager implements DownloadTask.CompletedListener
     private Handler mHandler;
 
     LinkedList<TransferTask> taskList;
-    //    private ConcurrentHashMap<String,DownloadTask> taskList;
+
     ExecutorService executorService;
 
-    public void addTask(String url)
+    public void addTask(String url,String fileName)
     {
         //注册完成事件，方便任务完成后将实例移出实例集合
-        startUpdateUI();
-        DownloadTask task = new DownloadTask("1.apk", url, SDCardUtils.getSDCardPath() + downLoadPath, downloadDao);
+        DownloadTask task = new DownloadTask(fileName, url, SDCardUtils.getSDCardPath() + downLoadPath, downloadDao);
         task.setCompletedListener(this);
         taskList.add(task);
         executorService.execute(task);
+        startUpdateUI();
     }
 
     public void restartTask(int index)
     {
-        startUpdateUI();//若无更新线程，重新启动
         ((DownloadTask) taskList.get(index)).setCompletedListener(this);
         executorService.execute(taskList.get(index));
+        startUpdateUI();//若无更新线程，重新启动
     }
 
     /**
@@ -149,7 +148,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     @Override
     public void isFinished(String url)
     {
-        Log.v("task finished", "task" + url + "download completed");
+        Log.v("task finished", "task : " + url + " download completed");
         DownloadTask task = getTask(url);
         if (task != null)
             taskList.remove(task);
@@ -170,7 +169,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
             synchronized (updateLock) {
                 if (isUpdating) {
                     mHandler.sendEmptyMessage(1);
-                    Log.v("timer", "updating");
                     mHandler.postDelayed(this, 1000);
                 }
             }
@@ -192,6 +190,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
         synchronized (updateLock) {
             isUpdating = false;
         }
+        Log.v("Update UI Thread","thread stop");
     }
 
     protected void ifNeedStopUpdateUI()

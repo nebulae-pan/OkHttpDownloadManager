@@ -81,11 +81,9 @@ public class DownloadTask extends TransferTask
             state = LoadState.START;
             Request request = new Request.Builder()
                     .url(url)
-                    .header("RANGE", "bytes=" + completedSize + "-")    //  Http value set breakpoints RANGE
+                    .header("RANGE", "bytes=" + completedSize + "-")    //  breakpoint
                     .build();
             Response response = client.newCall(request).execute();
-            Headers headers = response.headers();
-            Log.v("header", headers.toString());
             ResponseBody responseBody = response.body();
             if (responseBody != null) {
                 state = LoadState.DOWNLOADING;
@@ -106,6 +104,7 @@ public class DownloadTask extends TransferTask
                     updateCompleteSize();
                 }
                 updateCompleteSize();
+                Log.v("num", "complete:" + completedSize + ",,tasksize" + taskSize);
                 if (state == LoadState.PAUSE) {
                     return;
                 }

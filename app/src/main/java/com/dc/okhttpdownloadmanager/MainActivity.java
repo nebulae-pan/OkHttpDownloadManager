@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         listView = (ListView) findViewById(R.id.listView);
-        downloadManager = DownloadManager.getInstance(this.getApplicationContext(), handler);
         handler = new InnerHandler(this);
+        downloadManager = DownloadManager.getInstance(this.getApplicationContext(), handler);
         setListViewAdapter();
     }
 
@@ -75,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     @Override
     public void inputCompleted(String url, String fileName)
     {
-        downloadManager.addTask(url);
-        adapter.notifyDataSetChanged();
+        url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
+        downloadManager.addTask(url, fileName);
     }
 
     static class InnerHandler extends Handler
@@ -140,13 +141,18 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
                 convertView = ((Activity) context).getLayoutInflater().inflate(R.layout.item_download, parent, false);
             }
             TransferTask tf = data.get(position);
+            if (tf.getTaskSize() == 0) return convertView; //if taskSize isn't initial complete,post to getView
             ((TextView) convertView.findViewById(R.id.title)).setText(tf.getFileName());
-            ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int) (tf.getCompletedSize() / tf
+            ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int)(100*tf.getCompletedSize() / tf
                     .getTaskSize()));
             if (tf.getState() == LoadState.PAUSE)
+            {
                 ((Button) convertView.findViewById(R.id.operation)).setText("start");
+            }
             if (tf.getState() == LoadState.DOWNLOADING)
+            {
                 ((Button) convertView.findViewById(R.id.operation)).setText("pause");
+            }
             return convertView;
         }
     }

@@ -48,16 +48,6 @@ abstract public class TransferTask implements Runnable
         this.saveDirPath = saveDirPath;
     }
 
-    public void setTaskSize(long taskSize)
-    {
-        this.taskSize = taskSize;
-    }
-
-    public void setCompletedSize(long completedSize)
-    {
-        this.completedSize = completedSize;
-    }
-
     public int getState()
     {
         return state;
