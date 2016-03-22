@@ -3,11 +3,8 @@ package com.dc.okhttpdownloadmanager;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,15 +19,14 @@ import com.dc.downloadmanager.DownloadManager;
 import com.dc.downloadmanager.LoadState;
 import com.dc.downloadmanager.TransferTask;
 
-import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 
 
-public class MainActivity extends AppCompatActivity implements TaskConfirmDialog.InputCompletedListener
+public class MainActivity extends AppCompatActivity implements TaskConfirmDialog.InputCompletedListener,
+        DownloadManager.DownloadUpdateListener
 {
     private ListView listView;
     DownloadManager downloadManager;
-    Handler handler;
     protected Adapter adapter;
 
     @Override
@@ -41,8 +37,8 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         listView = (ListView) findViewById(R.id.listView);
-        handler = new InnerHandler(this);
-        downloadManager = DownloadManager.getInstance(this.getApplicationContext(), handler);
+        downloadManager = DownloadManager.getInstance(this.getApplicationContext());
+        downloadManager.setUpdateListener(this);
         setListViewAdapter();
     }
 
@@ -80,7 +76,13 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         downloadManager.addTask(url, fileName);
     }
 
-    static class InnerHandler extends Handler
+    @Override
+    public void OnUIUpdate()
+    {
+        adapter.notifyDataSetChanged();
+    }
+
+    /*static class InnerHandler extends Handler
     {
         WeakReference<MainActivity> reference;
         MainActivity activity;
@@ -100,7 +102,9 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
             }
             super.handleMessage(msg);
         }
-    }
+    }*/
+
+
 
     /**
      * just sample

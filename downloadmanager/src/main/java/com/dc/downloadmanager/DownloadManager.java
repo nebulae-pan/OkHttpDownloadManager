@@ -2,6 +2,7 @@ package com.dc.downloadmanager;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.LinkedList;
@@ -27,6 +28,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     final Object updateLock = new Object();//更新界面进程的互斥锁
     boolean isUpdating = false;
+    DownloadUpdateListener mDownloadUpdate;
 
     private Handler mHandler;
 
@@ -67,7 +69,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
             task.setState(LoadState.PAUSE);
         else
             Log.e("pauseTask", "task=null");
-        ifNeedStopUpdateUI();
     }
 
     public void cancelTask(String url)
@@ -80,11 +81,11 @@ public class DownloadManager implements DownloadTask.CompletedListener
         taskList.remove(task);
         //删除数据库中的数据
         downloadDao.deleteByKey(url);
-        ifNeedStopUpdateUI();
     }
 
     private void init(int nThread)
     {
+        mHandler = new Handler(Looper.getMainLooper());
         this.nThread = nThread;
         executorService = Executors.newFixedThreadPool(this.nThread);
         taskList = new LinkedList<>();
@@ -97,10 +98,9 @@ public class DownloadManager implements DownloadTask.CompletedListener
         init(nThread);
     }
 
-    private DownloadManager(Context context, int nThread, Handler handler)
+    private DownloadManager(Context context, int nThread)
     {
         this.context = context;
-        this.mHandler = handler;
         init(nThread);
     }
 
@@ -116,12 +116,12 @@ public class DownloadManager implements DownloadTask.CompletedListener
         return mManager;
     }
 
-    static public DownloadManager getInstance(Context context, Handler handler)
+    static public DownloadManager getInstance(Context context)
     {
         if (mManager == null) {
             synchronized (DownloadManager.class) {
                 if (mManager == null) {
-                    mManager = new DownloadManager(context, 3, handler);
+                    mManager = new DownloadManager(context, 3);
                 }
             }
         }
@@ -153,8 +153,11 @@ public class DownloadManager implements DownloadTask.CompletedListener
             taskList.remove(task);
         else
             Log.e("isFinished", "task=null");
-        mHandler.sendEmptyMessage(1);
-        ifNeedStopUpdateUI();
+    }
+
+    public void setUpdateListener(DownloadUpdateListener updateListener)
+    {
+        this.mDownloadUpdate=updateListener;
     }
 
     /**
@@ -167,7 +170,17 @@ public class DownloadManager implements DownloadTask.CompletedListener
         {
             synchronized (updateLock) {
                 if (isUpdating) {
-                    mHandler.sendEmptyMessage(1);
+                    mHandler.post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if(mDownloadUpdate==null)return;
+                            mDownloadUpdate.OnUIUpdate();
+                            Log.v("123","123123");
+                        }
+                    });
+                    ifNeedStopUpdateUI();
                     mHandler.postDelayed(this, 1000);
                 }
             }
@@ -194,9 +207,9 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     protected void ifNeedStopUpdateUI()
     {
-        mHandler.sendEmptyMessage(1);//update interface
+        //mHandler.sendEmptyMessage(1);//update interface
         for (TransferTask task : taskList) {
-            if (task.getState() == LoadState.DOWNLOADING)
+            if (task.getState() == LoadState.DOWNLOADING||task.getState()==LoadState.PREPARE)
                 return;
         }
         stopUpdateUI();
@@ -232,5 +245,10 @@ public class DownloadManager implements DownloadTask.CompletedListener
             daoSession = daoMaster.newSession();
         }
         return daoSession;
+    }
+
+    public interface DownloadUpdateListener
+    {
+        void OnUIUpdate();
     }
 }
