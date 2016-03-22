@@ -9,14 +9,13 @@
 firstly,add permisson at AndroidManifest.xml
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 then,initial download manager use this.getApplicationContext() in Activity class.
 
-    DownloadManager.getInstance(this.getApplicationContext(), handler);
+    DownloadManager.getInstance(this.getApplicationContext());
 or in Application class.
 
-    DownloadManager.getInstance(this, handler);
+    DownloadManager.getInstance(this);
 handler is create at UI thread , and you can update UI by this paramter.
 After initialize , use getInstance() in anywhere and will get DownloadManager instance.
 
