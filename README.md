@@ -25,5 +25,6 @@ if you need show download tasks infomation,you can get downloading tasks by
     downloadManager.getTaskList();
 return value is a list consist by class TranferTask , can use as paramter to ListView/RecyclerView's Adapater.
 
-
 ###other api
+
+![alt text](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-21-214932.png)
