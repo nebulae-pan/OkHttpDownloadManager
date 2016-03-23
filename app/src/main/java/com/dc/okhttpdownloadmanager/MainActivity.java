@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     {
         adapter = new Adapter(this, downloadManager.getTaskList());
         listView.setAdapter(adapter);
-
     }
 
     @Override

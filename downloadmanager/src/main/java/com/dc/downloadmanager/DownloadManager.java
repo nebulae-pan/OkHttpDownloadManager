@@ -36,6 +36,22 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     ExecutorService executorService;
 
+    private DownloadManager(Context context,int nThread)
+    {
+        this.context=context;
+        init(nThread);
+    }
+
+    private void init(int nThread)
+    {
+        mHandler = new Handler(Looper.getMainLooper());
+        this.nThread = nThread;
+        executorService = Executors.newFixedThreadPool(this.nThread);
+        taskList = new LinkedList<>();
+        this.nThread = nThread;
+        downloadDao = getDaoSession(context).getDownloadEntityDao();
+    }
+
     public void addTask(String url,String fileName)
     {
         //注册完成事件，方便任务完成后将实例移出实例集合
@@ -81,39 +97,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
         taskList.remove(task);
         //删除数据库中的数据
         downloadDao.deleteByKey(url);
-    }
-
-    private void init(int nThread)
-    {
-        mHandler = new Handler(Looper.getMainLooper());
-        this.nThread = nThread;
-        executorService = Executors.newFixedThreadPool(this.nThread);
-        taskList = new LinkedList<>();
-        this.nThread = nThread;
-        downloadDao = getDaoSession(context).getDownloadEntityDao();
-    }
-
-    private DownloadManager(int nThread)
-    {
-        init(nThread);
-    }
-
-    private DownloadManager(Context context, int nThread)
-    {
-        this.context = context;
-        init(nThread);
-    }
-
-    static public DownloadManager getInstance()
-    {
-        if (mManager == null) {
-            synchronized (DownloadManager.class) {
-                if (mManager == null) {
-                    mManager = new DownloadManager(3);
-                }
-            }
-        }
-        return mManager;
     }
 
     static public DownloadManager getInstance(Context context)
@@ -207,7 +190,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     protected void ifNeedStopUpdateUI()
     {
-        //mHandler.sendEmptyMessage(1);//update interface
         for (TransferTask task : taskList) {
             if (task.getState() == LoadState.DOWNLOADING||task.getState()==LoadState.PREPARE)
                 return;
