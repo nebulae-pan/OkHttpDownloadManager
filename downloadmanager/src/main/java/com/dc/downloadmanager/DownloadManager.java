@@ -19,7 +19,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
     Context context;
     static private DaoMaster daoMaster;
     static private DaoSession daoSession;
-
     private DownloadEntityDao downloadDao;
 
     String downLoadPath = "";

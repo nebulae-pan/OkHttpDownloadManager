@@ -43,6 +43,7 @@ public class TaskConfirmDialog extends DialogFragment
         return builder.create();
     }
 
+
     interface InputCompletedListener
     {
         void inputCompleted(String url, String fileName);
