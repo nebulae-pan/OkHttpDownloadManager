@@ -21,7 +21,7 @@ public class DownloadTask extends TransferTask
 {
     private Handler mHandler;
 
-    int subThreadNum=3;
+    private int subThreadNum = 3;
     private DownloadEntityDao downloadDao;
     private CompletedListener completedListener;
     private ThreadTask[] tasks;
@@ -35,7 +35,6 @@ public class DownloadTask extends TransferTask
     public DownloadTask(String fileName, String url, String saveDirPath, DownloadEntityDao downloadDao)
     {
         this.url = url;
-//        mHandler = new Handler(Looper.getMainLooper());
         this.saveDirPath = saveDirPath;
         this.fileName = fileName;
         client = new OkHttpClient();
@@ -69,14 +68,8 @@ public class DownloadTask extends TransferTask
     @Override
     public void run()
     {
-        InputStream inputStream = null;
-        BufferedInputStream bis = null;
         try {
             SDCardUtils.isExist(saveDirPath);
-            /*file = new RandomAccessFile(saveDirPath + fileName, "rwd");
-            if (file.length() < completedSize) {
-                completedSize = 0;
-            }*/
             state = LoadState.START;
             Request request = new Request.Builder()
                     .url(url)
@@ -148,15 +141,33 @@ public class DownloadTask extends TransferTask
         this.completedListener = completedListener;
     }
 
-    public void setHandler(Handler mHandler)
-    {
-        this.mHandler = mHandler;
-    }
-
     private void updateCompleteSize()
     {
         downloadEntity.setCompletedSize(completedSize);
         downloadDao.insertOrReplace(downloadEntity);
     }
+
+    private long[] getThreadComplete()
+    {
+        String threadComplete = downloadEntity.getThreadComplete();
+        String[] s=threadComplete.split(",");
+        long[] result=new long[subThreadNum];
+        for(int i=0;i<subThreadNum;i++)
+        {
+            result[i]= Long.parseLong(s[i]);
+        }
+        return result;
+    }
+
+    private String generateThreadComplete(long[] complete)
+    {
+        StringBuilder sb=new StringBuilder();
+        for(int i=0;i<subThreadNum;i++)
+        {
+            sb.append(complete[i]).append(",");
+        }
+        return sb.toString();
+    }
+
 }
 

@@ -24,6 +24,6 @@ public class DAOgenerator
         entity.addLongProperty("completedSize");
         entity.addStringProperty("saveDirPath");
         entity.addStringProperty("fileName");
-        entity.addShortProperty("threadComplete");
+        entity.addStringProperty("threadComplete");
     }
 }
