@@ -26,4 +26,7 @@ return value is a list consist by class TransferTask , can use as parameter to L
 
 ###other api
 
+    downloadManager.pause(url);
+    downloadManager.restart(url);
+
 ![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-21-214932.png)
