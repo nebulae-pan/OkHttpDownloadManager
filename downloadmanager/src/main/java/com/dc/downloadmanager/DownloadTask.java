@@ -20,17 +20,15 @@ import okhttp3.ResponseBody;
 public class DownloadTask extends TransferTask
 {
     private Handler mHandler;
-
     private int subThreadNum = 3;
+    private long threadTaskSize;
     private DownloadEntityDao downloadDao;
     private CompletedListener completedListener;
     private ThreadTask[] tasks;
-
     /**
      * 保存的信息
      */
     private final DownloadEntity downloadEntity;
-
 
     public DownloadTask(String fileName, String url, String saveDirPath, DownloadEntityDao downloadDao)
     {
@@ -83,12 +81,12 @@ public class DownloadTask extends TransferTask
             state = LoadState.DOWNLOADING;
             if (completedSize == 0) {
                 taskSize = responseBody.contentLength();
+                threadTaskSize = (taskSize % subThreadNum) == 0 ? taskSize / subThreadNum
+                        : taskSize / subThreadNum + 1;
                 downloadEntity.setTaskSize(taskSize);
             }
             updateCompleteSize();
-            if (state == LoadState.PAUSE) {
-                return;
-            }
+
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -100,21 +98,12 @@ public class DownloadTask extends TransferTask
                 e.printStackTrace();
             }
         }
+        if (state == LoadState.PAUSE) {
+            return;
+        }
         state = LoadState.COMPLETED;
         //通知Manager任务已经结束
         completedListener.isFinished(url);
-    }
-
-    @Override
-    public String toString()
-    {
-        return "DownloadTask{" +
-                "fileName='" + fileName + '\'' +
-                ", taskSize=" + taskSize +
-                ", completeSize=" + completedSize +
-                ", suffix='" + suffix + '\'' +
-                ", url='" + url + '\'' +
-                '}';
     }
 
     public String getSuffix()
