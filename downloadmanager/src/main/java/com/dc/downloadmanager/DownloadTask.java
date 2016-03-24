@@ -1,16 +1,13 @@
 package com.dc.downloadmanager;
 
 import android.os.Handler;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.Locale;
 
-import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -24,6 +21,7 @@ public class DownloadTask extends TransferTask
 {
     private Handler mHandler;
 
+    int subThreadNum=3;
     private DownloadEntityDao downloadDao;
     private CompletedListener completedListener;
 
@@ -61,8 +59,8 @@ public class DownloadTask extends TransferTask
         this.url = downloadEntity.getUrl();
         this.saveDirPath = downloadEntity.getSaveDirPath();
         this.fileName = downloadEntity.getFileName();
-        this.completedSize=downloadEntity.getCompletedSize();
-        this.taskSize=downloadEntity.getTaskSize();
+        this.completedSize = downloadEntity.getCompletedSize();
+        this.taskSize = downloadEntity.getTaskSize();
         this.state = LoadState.PREPARE;
         suffix = obtainSuffix();
     }
@@ -74,57 +72,51 @@ public class DownloadTask extends TransferTask
         BufferedInputStream bis = null;
         try {
             SDCardUtils.isExist(saveDirPath);
-            file = new RandomAccessFile(saveDirPath + fileName, "rwd");
+            /*file = new RandomAccessFile(saveDirPath + fileName, "rwd");
             if (file.length() < completedSize) {
                 completedSize = 0;
-            }
+            }*/
             state = LoadState.START;
             Request request = new Request.Builder()
                     .url(url)
-                    .header("RANGE", "bytes=" + completedSize + "-")    //  breakpoint
                     .build();
             Response response = client.newCall(request).execute();
             ResponseBody responseBody = response.body();
-            if (responseBody != null) {
-                state = LoadState.DOWNLOADING;
-                if (completedSize == 0)
-                {
-                    taskSize = responseBody.contentLength();
-                    downloadEntity.setTaskSize(taskSize);
-                }
-                inputStream = responseBody.byteStream();
-                bis = new BufferedInputStream(inputStream);
-                byte[] buffer = new byte[50 * 1024];
-                int length;
-                file.seek(completedSize);
-                while ((length = bis.read(buffer)) > 0 && state == LoadState.DOWNLOADING) {
-                    file.write(buffer, 0, length);
-                    completedSize += length;
-                    //更新进度并保存
-                    updateCompleteSize();
-                }
-                updateCompleteSize();
-                if (state == LoadState.PAUSE) {
-                    return;
-                }
+            if (responseBody == null) {
+                System.out.println("resource not found");
+                return;
             }
-        }  catch (IOException e) {
+            state = LoadState.DOWNLOADING;
+            if (completedSize == 0) {
+                taskSize = responseBody.contentLength();
+                downloadEntity.setTaskSize(taskSize);
+            }
+            inputStream = responseBody.byteStream();
+            bis = new BufferedInputStream(inputStream);
+            byte[] buffer = new byte[50 * 1024];
+            int length;
+            file.seek(completedSize);
+            while ((length = bis.read(buffer)) > 0 && state == LoadState.DOWNLOADING) {
+                file.write(buffer, 0, length);
+                completedSize += length;
+                //更新进度并保存
+                updateCompleteSize();
+            }
+            updateCompleteSize();
+            if (state == LoadState.PAUSE) {
+                return;
+            }
+        } catch (IOException e) {
             e.printStackTrace();
             return;
-        }
-        finally {
-            if (bis != null) try {
-                bis.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (inputStream != null) try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (file != null) try {
-                file.close();
+        } finally {
+            try {
+                if (bis != null)
+                    bis.close();
+                if (inputStream != null)
+                    inputStream.close();
+                if (file != null)
+                    file.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

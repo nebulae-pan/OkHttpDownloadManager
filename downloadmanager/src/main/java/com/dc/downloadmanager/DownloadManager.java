@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -139,7 +140,8 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     public void setUpdateListener(DownloadUpdateListener updateListener)
     {
-        this.mDownloadUpdate=updateListener;
+        WeakReference<DownloadUpdateListener> reference=new WeakReference<>(updateListener);//prevent memory leak
+        this.mDownloadUpdate=reference.get();
     }
 
     /**
