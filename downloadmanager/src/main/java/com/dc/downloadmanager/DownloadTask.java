@@ -24,6 +24,7 @@ public class DownloadTask extends TransferTask
     int subThreadNum=3;
     private DownloadEntityDao downloadDao;
     private CompletedListener completedListener;
+    private ThreadTask[] tasks;
 
     /**
      * 保存的信息
@@ -91,17 +92,6 @@ public class DownloadTask extends TransferTask
                 taskSize = responseBody.contentLength();
                 downloadEntity.setTaskSize(taskSize);
             }
-            inputStream = responseBody.byteStream();
-            bis = new BufferedInputStream(inputStream);
-            byte[] buffer = new byte[50 * 1024];
-            int length;
-            file.seek(completedSize);
-            while ((length = bis.read(buffer)) > 0 && state == LoadState.DOWNLOADING) {
-                file.write(buffer, 0, length);
-                completedSize += length;
-                //更新进度并保存
-                updateCompleteSize();
-            }
             updateCompleteSize();
             if (state == LoadState.PAUSE) {
                 return;
@@ -111,10 +101,6 @@ public class DownloadTask extends TransferTask
             return;
         } finally {
             try {
-                if (bis != null)
-                    bis.close();
-                if (inputStream != null)
-                    inputStream.close();
                 if (file != null)
                     file.close();
             } catch (IOException e) {

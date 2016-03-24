@@ -11,6 +11,7 @@ public class DownloadEntity {
     private Long completedSize;
     private String saveDirPath;
     private String fileName;
+    private Short threadComplete;
 
     public DownloadEntity() {
     }
@@ -19,12 +20,13 @@ public class DownloadEntity {
         this.url = url;
     }
 
-    public DownloadEntity(String url, Long taskSize, Long completedSize, String saveDirPath, String fileName) {
+    public DownloadEntity(String url, Long taskSize, Long completedSize, String saveDirPath, String fileName, Short threadComplete) {
         this.url = url;
         this.taskSize = taskSize;
         this.completedSize = completedSize;
         this.saveDirPath = saveDirPath;
         this.fileName = fileName;
+        this.threadComplete = threadComplete;
     }
 
     public String getUrl() {
@@ -65,6 +67,14 @@ public class DownloadEntity {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public Short getThreadComplete() {
+        return threadComplete;
+    }
+
+    public void setThreadComplete(Short threadComplete) {
+        this.threadComplete = threadComplete;
     }
 
 }

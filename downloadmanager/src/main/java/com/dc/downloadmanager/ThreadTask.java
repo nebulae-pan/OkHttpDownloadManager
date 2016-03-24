@@ -20,7 +20,7 @@ public class ThreadTask extends Thread
     long threadComplete;
     String fileSavePath;
     DownloadTask downloadTask;
-
+    
     public ThreadTask(String url, int threadId, long threadTaskSize, long threadComplete, String fileSavePath,
                       DownloadTask downloadTask)
     {
