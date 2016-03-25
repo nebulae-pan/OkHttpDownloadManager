@@ -1,8 +1,9 @@
 # OkHttpDownloadManager v1.0
 ##introduction
-* a simple file download manager developed by okHttp
+* a simple file download manager support by okHttp
 * support breakpoint download
 * support multi-thread download
+* custom parallel tasks' number and sub-thread number of a task
 
 ##usage
 ###simple download
@@ -19,14 +20,22 @@ or in Application class.
 After initialize , use getInstance() in anywhere and will get DownloadManager instance.
 
     DownloadManager manager = DownloadManager.getInstance();
-if you need show download tasks information,you can get downloading tasks by
+if you need show download tasks information at Activity, you can get downloading tasks list by
 
     downloadManager.getTaskList();
-return value is a list consist by class TransferTask , can use as parameter to ListView/RecyclerView's Adapter.
+return value is a list consist by class TransferTask , can use as the parameter of ListView/RecyclerView's Adapter.
+Implement interface DownloadManager.DownloadUpdateListener in Activity,and update UI
+
+    @Override
+    public void OnUIUpdate()
+    {
+        adapter.notifyDataSetChanged();
+    }
 
 ###other api
 
     downloadManager.pause(url);
     downloadManager.restart(url);
 
+###single task downloading
 ![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-21-214932.png)
