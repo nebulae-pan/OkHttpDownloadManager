@@ -35,8 +35,8 @@ public class ThreadTask extends Thread
     @Override
     public void run()
     {
-        int start = (int) (threadTaskSize * (threadId - 1) + threadComplete);//start position
-        int end = (int) (threadTaskSize * threadId - 1);//end position
+        int start = (int) (threadTaskSize * threadId + threadComplete);//start position
+        int end = (int) (threadTaskSize * (threadId + 1) - 1);//end position
         OkHttpClient client = new OkHttpClient();
         //build request
         Request request = new Request.Builder()

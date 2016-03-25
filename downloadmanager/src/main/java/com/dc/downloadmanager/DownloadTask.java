@@ -1,11 +1,9 @@
 package com.dc.downloadmanager;
 
 import android.os.Handler;
+import android.os.Looper;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
@@ -19,12 +17,12 @@ import okhttp3.ResponseBody;
  */
 public class DownloadTask extends TransferTask
 {
-    private Handler mHandler;
+    Handler mHandler;
     private int subThreadNum = 3;
     private long threadTaskSize;
+    private long[] threadComplete;
     private DownloadEntityDao downloadDao;
     private CompletedListener completedListener;
-    private ThreadTask[] tasks;
     /**
      * 保存的信息
      */
@@ -35,29 +33,33 @@ public class DownloadTask extends TransferTask
         this.url = url;
         this.saveDirPath = saveDirPath;
         this.fileName = fileName;
-        client = new OkHttpClient();
+        this.client = new OkHttpClient();
         this.state = LoadState.PREPARE;
         this.suffix = obtainSuffix();
         this.downloadDao = downloadDao;
+        this.threadComplete = new long[3];
+        this.mHandler = new Handler(Looper.getMainLooper());
         downloadEntity = new DownloadEntity();
         downloadEntity.setCompletedSize(0L);
         downloadEntity.setTaskSize(taskSize);
         downloadEntity.setUrl(url);
         downloadEntity.setFileName(fileName);
         downloadEntity.setSaveDirPath(saveDirPath);
+        downloadEntity.setThreadComplete(generateThreadComplete(threadComplete));
         //新建任务
         this.downloadDao.insertOrReplace(downloadEntity);
     }
 
     public DownloadTask(DownloadEntityDao downloadDao, DownloadEntity downloadEntity)
     {
-        client = new OkHttpClient();
+        this.client = new OkHttpClient();
         this.downloadDao = downloadDao;
         this.downloadEntity = downloadEntity;
         this.url = downloadEntity.getUrl();
         this.saveDirPath = downloadEntity.getSaveDirPath();
         this.fileName = downloadEntity.getFileName();
         this.completedSize = downloadEntity.getCompletedSize();
+        this.threadComplete = getThreadComplete(downloadEntity);
         this.taskSize = downloadEntity.getTaskSize();
         this.state = LoadState.PREPARE;
         suffix = obtainSuffix();
@@ -78,18 +80,36 @@ public class DownloadTask extends TransferTask
                 System.out.println("resource not found");
                 return;
             }
-            state = LoadState.DOWNLOADING;
             if (completedSize == 0) {
                 taskSize = responseBody.contentLength();
-                threadTaskSize = (taskSize % subThreadNum) == 0 ? taskSize / subThreadNum
-                        : taskSize / subThreadNum + 1;
-                downloadEntity.setTaskSize(taskSize);
             }
-            updateCompleteSize();
+            threadTaskSize = (taskSize % subThreadNum) == 0 ? taskSize / subThreadNum
+                    : taskSize / subThreadNum + 1;
+            downloadEntity.setTaskSize(taskSize);
+            state = LoadState.DOWNLOADING;
 
+            ThreadTask[] tasks = new ThreadTask[subThreadNum];
+            for (int i = 0; i < subThreadNum; i++) {
+                tasks[i] = new ThreadTask(url, i, threadTaskSize, threadComplete[i], saveDirPath + fileName, this);
+                tasks[i].start();
+            }
+            while (state == LoadState.DOWNLOADING) {
+                int tempSize = 0;
+                for (int i = 0; i < subThreadNum; i++) {
+                    threadComplete[i] = tasks[i].getThreadComplete();
+                    tempSize += tasks[i].getThreadComplete();
+                }
+                completedSize = tempSize;
+                updateCompleteSize();
+                if (completedSize == taskSize)
+                    break;
+                Thread.sleep(1000);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (file != null)
@@ -133,26 +153,25 @@ public class DownloadTask extends TransferTask
     private void updateCompleteSize()
     {
         downloadEntity.setCompletedSize(completedSize);
+        downloadEntity.setThreadComplete(generateThreadComplete(threadComplete));
         downloadDao.insertOrReplace(downloadEntity);
     }
 
-    private long[] getThreadComplete()
+    private long[] getThreadComplete(DownloadEntity downloadEntity)
     {
         String threadComplete = downloadEntity.getThreadComplete();
-        String[] s=threadComplete.split(",");
-        long[] result=new long[subThreadNum];
-        for(int i=0;i<subThreadNum;i++)
-        {
-            result[i]= Long.parseLong(s[i]);
+        String[] s = threadComplete.split(",");
+        long[] result = new long[subThreadNum];
+        for (int i = 0; i < subThreadNum; i++) {
+            result[i] = Long.parseLong(s[i]);
         }
         return result;
     }
 
     private String generateThreadComplete(long[] complete)
     {
-        StringBuilder sb=new StringBuilder();
-        for(int i=0;i<subThreadNum;i++)
-        {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < subThreadNum; i++) {
             sb.append(complete[i]).append(",");
         }
         return sb.toString();

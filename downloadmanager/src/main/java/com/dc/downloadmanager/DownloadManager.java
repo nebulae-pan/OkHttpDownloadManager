@@ -36,9 +36,9 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     ExecutorService executorService;
 
-    private DownloadManager(Context context,int nThread)
+    private DownloadManager(Context context, int nThread)
     {
-        this.context=context;
+        this.context = context;
         init(nThread);
     }
 
@@ -52,7 +52,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
         downloadDao = getDaoSession(context).getDownloadEntityDao();
     }
 
-    public void addTask(String url,String fileName)
+    public void addTask(String url, String fileName)
     {
         //注册完成事件，方便任务完成后将实例移出实例集合
         DownloadTask task = new DownloadTask(fileName, url, SDCardUtils.getSDCardPath() + downLoadPath, downloadDao);
@@ -71,6 +71,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     /**
      * Can get downloading task list
+     *
      * @return
      */
     public LinkedList<TransferTask> getTaskList()
@@ -140,8 +141,8 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     public void setUpdateListener(DownloadUpdateListener updateListener)
     {
-        WeakReference<DownloadUpdateListener> reference=new WeakReference<>(updateListener);//prevent memory leak
-        this.mDownloadUpdate=reference.get();
+        WeakReference<DownloadUpdateListener> reference = new WeakReference<>(updateListener);//prevent memory leak
+        this.mDownloadUpdate = reference.get();
     }
 
     /**
@@ -159,9 +160,9 @@ public class DownloadManager implements DownloadTask.CompletedListener
                         @Override
                         public void run()
                         {
-                            if(mDownloadUpdate==null)return;
+                            if (mDownloadUpdate == null) return;
                             mDownloadUpdate.OnUIUpdate();
-                            Log.v("123","123123");
+                            Log.v("123", "123123");
                         }
                     });
                     ifNeedStopUpdateUI();
@@ -186,13 +187,14 @@ public class DownloadManager implements DownloadTask.CompletedListener
         synchronized (updateLock) {
             isUpdating = false;
         }
-        Log.v("Update UI Thread","thread stop");
+        Log.v("Update UI Thread", "thread stop");
     }
 
     protected void ifNeedStopUpdateUI()
     {
         for (TransferTask task : taskList) {
-            if (task.getState() == LoadState.DOWNLOADING||task.getState()==LoadState.PREPARE)
+            if (task.getState() == LoadState.DOWNLOADING || task.getState() == LoadState.PREPARE || task.getState()
+                    == LoadState.START)
                 return;
         }
         stopUpdateUI();
