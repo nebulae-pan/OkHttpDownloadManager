@@ -35,6 +35,7 @@ Implement interface DownloadManager.DownloadUpdateListener in Activity,and updat
 ###other api
 
     downloadManager.pause(url);
+    downloadManager.cancel(url);
     downloadManager.restart(url);
 
 ###single task downloading
