@@ -142,7 +142,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     @Override
     public void isFinished(String url)
     {
-        //Log.v("task finished", "task : " + url + " download completed");
+        Log.v("task finished", "task : " + url + " download completed");
         DownloadTask task = getTask(url);
         if (task != null)
             taskList.remove(task);

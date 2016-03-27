@@ -82,18 +82,18 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     @Override
     public void inputCompleted(String url, String fileName)
     {
-        //url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
+        url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
         String url1="https://github.com/nebulae-pan/OkHttpDownloadManager/archive/master.zip";
         String url2="https://github.com/bxiaopeng/AndroidStudio/archive/master.zip";
         String url3="https://github.com/romannurik/AndroidAssetStudio/archive/master.zip";
         String url4="https://github.com/facebook/fresco/archive/master.zip";
         String url5="https://github.com/bacy/volley/archive/master.zip";
-        //downloadManager.addTask(url, fileName);
+        downloadManager.addTask(url, "123.apk");
         downloadManager.addTask(url1, "1.zip");
-        //downloadManager.addTask(url2, "2.zip");
-        //downloadManager.addTask(url3, "3.zip");
-        //downloadManager.addTask(url4, "4.zip");
-        //downloadManager.addTask(url5, "5.zip");
+        downloadManager.addTask(url2, "2.zip");
+        downloadManager.addTask(url3, "3.zip");
+        downloadManager.addTask(url4, "4.zip");
+        downloadManager.addTask(url5, "5.zip");
     }
 
     @Override

@@ -12,6 +12,7 @@ public class DownloadEntity {
     private String saveDirPath;
     private String fileName;
     private String threadComplete;
+    private Integer subThreadNum;
 
     public DownloadEntity() {
     }
@@ -20,13 +21,14 @@ public class DownloadEntity {
         this.url = url;
     }
 
-    public DownloadEntity(String url, Long taskSize, Long completedSize, String saveDirPath, String fileName, String threadComplete) {
+    public DownloadEntity(String url, Long taskSize, Long completedSize, String saveDirPath, String fileName, String threadComplete, Integer subThreadNum) {
         this.url = url;
         this.taskSize = taskSize;
         this.completedSize = completedSize;
         this.saveDirPath = saveDirPath;
         this.fileName = fileName;
         this.threadComplete = threadComplete;
+        this.subThreadNum = subThreadNum;
     }
 
     public String getUrl() {
@@ -77,16 +79,12 @@ public class DownloadEntity {
         this.threadComplete = threadComplete;
     }
 
-    @Override
-    public String toString()
-    {
-        return "DownloadEntity{" +
-                "url='" + url + '\'' +
-                ", taskSize=" + taskSize +
-                ", completedSize=" + completedSize +
-                ", saveDirPath='" + saveDirPath + '\'' +
-                ", fileName='" + fileName + '\'' +
-                ", threadComplete='" + threadComplete + '\'' +
-                '}';
+    public Integer getSubThreadNum() {
+        return subThreadNum;
     }
+
+    public void setSubThreadNum(Integer subThreadNum) {
+        this.subThreadNum = subThreadNum;
+    }
+
 }

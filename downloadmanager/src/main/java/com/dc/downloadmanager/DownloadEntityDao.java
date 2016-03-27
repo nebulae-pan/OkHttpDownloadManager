@@ -29,6 +29,7 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, String> {
         public final static Property SaveDirPath = new Property(3, String.class, "saveDirPath", false, "SAVE_DIR_PATH");
         public final static Property FileName = new Property(4, String.class, "fileName", false, "FILE_NAME");
         public final static Property ThreadComplete = new Property(5, String.class, "threadComplete", false, "THREAD_COMPLETE");
+        public final static Property SubThreadNum = new Property(6, Integer.class, "subThreadNum", false, "SUB_THREAD_NUM");
     };
 
 
@@ -49,7 +50,8 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, String> {
                 "\"COMPLETED_SIZE\" INTEGER," + // 2: completedSize
                 "\"SAVE_DIR_PATH\" TEXT," + // 3: saveDirPath
                 "\"FILE_NAME\" TEXT," + // 4: fileName
-                "\"THREAD_COMPLETE\" TEXT);"); // 5: threadComplete
+                "\"THREAD_COMPLETE\" TEXT," + // 5: threadComplete
+                "\"SUB_THREAD_NUM\" INTEGER);"); // 6: subThreadNum
     }
 
     /** Drops the underlying database table. */
@@ -92,6 +94,11 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, String> {
         if (threadComplete != null) {
             stmt.bindString(6, threadComplete);
         }
+ 
+        Integer subThreadNum = entity.getSubThreadNum();
+        if (subThreadNum != null) {
+            stmt.bindLong(7, subThreadNum);
+        }
     }
 
     /** @inheritdoc */
@@ -109,7 +116,8 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, String> {
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // completedSize
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // saveDirPath
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // fileName
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // threadComplete
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // threadComplete
+            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6) // subThreadNum
         );
         return entity;
     }
@@ -123,6 +131,7 @@ public class DownloadEntityDao extends AbstractDao<DownloadEntity, String> {
         entity.setSaveDirPath(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setFileName(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setThreadComplete(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setSubThreadNum(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
      }
     
     /** @inheritdoc */

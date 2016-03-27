@@ -47,6 +47,7 @@ public class DownloadTask extends TransferTask
         downloadEntity.setFileName(fileName);
         downloadEntity.setSaveDirPath(saveDirPath);
         downloadEntity.setThreadComplete(generateThreadComplete(threadComplete));
+        downloadEntity.setSubThreadNum(subThreadNum);
         //新建任务
         this.downloadDao.insertOrReplace(downloadEntity);
     }
@@ -56,6 +57,8 @@ public class DownloadTask extends TransferTask
         this.client = new OkHttpClient();
         this.downloadDao = downloadDao;
         this.downloadEntity = downloadEntity;
+        //put this statement before getThreadComplete , give the method correct subThreadNum
+        this.subThreadNum = downloadEntity.getSubThreadNum();
         this.url = downloadEntity.getUrl();
         this.saveDirPath = downloadEntity.getSaveDirPath();
         this.fileName = downloadEntity.getFileName();
@@ -63,7 +66,7 @@ public class DownloadTask extends TransferTask
         this.threadComplete = getThreadComplete(downloadEntity);
         this.taskSize = downloadEntity.getTaskSize();
         this.suffix = obtainSuffix();
-        this.state=LoadState.PAUSE;
+        this.state = LoadState.PAUSE;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class DownloadTask extends TransferTask
             if (completedSize == 0) {
                 Request request = new Request.Builder()
                         .url(url)
-                        .header("RANGE", "bytes=" + 100 + "-")
+                        .header("RANGE", "bytes=" + 0 + "-")
                         .build();
                 Response response = client.newCall(request).execute();
                 ResponseBody responseBody = response.body();
@@ -83,10 +86,17 @@ public class DownloadTask extends TransferTask
                     System.out.println("resource not found");
                     return;
                 }
-                taskSize = responseBody.contentLength();
-
-                //Log.v("header", response.headers().toString());
-                //Log.v("responeLenght", response.body().contentLength() + "");
+                //judge target url server whether support range head
+                String Content_Range = response.header("Content-Range");
+                if (Content_Range == null) {
+                    //if not support , get content length and use single thread process download
+                    taskSize = responseBody.contentLength();
+                    subThreadNum = 1;
+                    downloadEntity.setSubThreadNum(subThreadNum);
+                } else
+                    //else get length from head content range or
+                    //directly get by content length(request use Range: byte:0-)
+                    taskSize = Long.parseLong(Content_Range.substring(Content_Range.lastIndexOf("/")+1));
 
                 responseBody.close();
             }
@@ -107,8 +117,10 @@ public class DownloadTask extends TransferTask
                     threadComplete[i] = tasks[i].getThreadComplete();
                     tempSize += tasks[i].getThreadComplete();
                 }
+
                 completedSize = tempSize;
                 updateCompleteSize();
+
                 if (completedSize >= taskSize)
                     break;
                 Thread.sleep(1000);
@@ -130,7 +142,7 @@ public class DownloadTask extends TransferTask
             return;
         }
         state = LoadState.COMPLETED;
-        //通知Manager任务已经结束
+        //notify Manager task already complete
         completedListener.isFinished(url);
     }
 

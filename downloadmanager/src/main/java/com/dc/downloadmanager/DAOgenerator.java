@@ -25,5 +25,6 @@ public class DAOgenerator
         entity.addStringProperty("saveDirPath");
         entity.addStringProperty("fileName");
         entity.addStringProperty("threadComplete");
+        entity.addIntProperty("subThreadNum");
     }
 }
