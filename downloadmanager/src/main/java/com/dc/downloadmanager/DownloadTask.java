@@ -2,8 +2,11 @@ package com.dc.downloadmanager;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
@@ -19,7 +22,6 @@ public class DownloadTask extends TransferTask
 {
     Handler mHandler;
     private int subThreadNum = 3;
-    private long threadTaskSize;
     private long[] threadComplete;
     private DownloadEntityDao downloadDao;
     private CompletedListener completedListener;
@@ -34,7 +36,6 @@ public class DownloadTask extends TransferTask
         this.saveDirPath = saveDirPath;
         this.fileName = fileName;
         this.client = new OkHttpClient();
-        this.state = LoadState.PREPARE;
         this.suffix = obtainSuffix();
         this.downloadDao = downloadDao;
         this.threadComplete = new long[3];
@@ -61,8 +62,8 @@ public class DownloadTask extends TransferTask
         this.completedSize = downloadEntity.getCompletedSize();
         this.threadComplete = getThreadComplete(downloadEntity);
         this.taskSize = downloadEntity.getTaskSize();
-        this.state = LoadState.PREPARE;
-        suffix = obtainSuffix();
+        this.suffix = obtainSuffix();
+        this.state=LoadState.PAUSE;
     }
 
     @Override
@@ -71,19 +72,25 @@ public class DownloadTask extends TransferTask
         try {
             SDCardUtils.isExist(saveDirPath);
             state = LoadState.START;
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-            Response response = client.newCall(request).execute();
-            ResponseBody responseBody = response.body();
-            if (responseBody == null) {
-                System.out.println("resource not found");
-                return;
-            }
             if (completedSize == 0) {
+                Request request = new Request.Builder()
+                        .url(url)
+                        .header("RANGE", "bytes=" + 100 + "-")
+                        .build();
+                Response response = client.newCall(request).execute();
+                ResponseBody responseBody = response.body();
+                if (responseBody == null) {
+                    System.out.println("resource not found");
+                    return;
+                }
                 taskSize = responseBody.contentLength();
+
+                //Log.v("header", response.headers().toString());
+                //Log.v("responeLenght", response.body().contentLength() + "");
+
+                responseBody.close();
             }
-            threadTaskSize = (taskSize % subThreadNum) == 0 ? taskSize / subThreadNum
+            long threadTaskSize = (taskSize % subThreadNum) == 0 ? taskSize / subThreadNum
                     : taskSize / subThreadNum + 1;
             downloadEntity.setTaskSize(taskSize);
             state = LoadState.DOWNLOADING;
@@ -93,6 +100,7 @@ public class DownloadTask extends TransferTask
                 tasks[i] = new ThreadTask(url, i, threadTaskSize, threadComplete[i], saveDirPath + fileName, this);
                 tasks[i].start();
             }
+
             while (state == LoadState.DOWNLOADING) {
                 int tempSize = 0;
                 for (int i = 0; i < subThreadNum; i++) {
@@ -101,7 +109,7 @@ public class DownloadTask extends TransferTask
                 }
                 completedSize = tempSize;
                 updateCompleteSize();
-                if (completedSize == taskSize)
+                if (completedSize >= taskSize)
                     break;
                 Thread.sleep(1000);
             }
@@ -176,6 +184,5 @@ public class DownloadTask extends TransferTask
         }
         return sb.toString();
     }
-
 }
 

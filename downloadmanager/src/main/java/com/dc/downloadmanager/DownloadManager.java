@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,6 +49,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
         this.nThread = nThread;
         executorService = Executors.newFixedThreadPool(this.nThread);
         taskList = new LinkedList<>();
+        getDownloadTask();
         this.nThread = nThread;
         downloadDao = getDaoSession(context).getDownloadEntityDao();
     }
@@ -83,7 +85,9 @@ public class DownloadManager implements DownloadTask.CompletedListener
     {
         DownloadTask task = (DownloadTask) taskList.get(index);
         if (task != null)
+        {
             task.setState(LoadState.PAUSE);
+        }
         else
             Log.e("pauseTask", "task=null");
     }
@@ -112,6 +116,13 @@ public class DownloadManager implements DownloadTask.CompletedListener
         return mManager;
     }
 
+    static public DownloadManager getInstance()
+    {
+        if (mManager == null)
+            throw new NullPointerException();
+        return mManager;
+    }
+
     public void setThreadNum(int nThread)
     {
         this.nThread = nThread;
@@ -131,7 +142,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     @Override
     public void isFinished(String url)
     {
-        Log.v("task finished", "task : " + url + " download completed");
+        //Log.v("task finished", "task : " + url + " download completed");
         DownloadTask task = getTask(url);
         if (task != null)
             taskList.remove(task);
@@ -162,7 +173,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
                         {
                             if (mDownloadUpdate == null) return;
                             mDownloadUpdate.OnUIUpdate();
-                            Log.v("123", "123123");
                         }
                     });
                     ifNeedStopUpdateUI();
@@ -187,7 +197,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
         synchronized (updateLock) {
             isUpdating = false;
         }
-        Log.v("Update UI Thread", "thread stop");
+        //Log.v("Update UI Thread", "thread stop");
     }
 
     protected void ifNeedStopUpdateUI()
@@ -230,6 +240,22 @@ public class DownloadManager implements DownloadTask.CompletedListener
             daoSession = daoMaster.newSession();
         }
         return daoSession;
+    }
+
+    private void getDownloadTask()
+    {
+        DownloadEntityDao downloadEntityDao = getDaoSession(context).getDownloadEntityDao();
+        List<DownloadEntity> entityList = downloadEntityDao.loadAll();
+        for (DownloadEntity entity : entityList) {
+            Log.e("dao", entity.toString());
+            if (entity.getCompletedSize().equals(entity.getTaskSize()))
+            {
+
+            }
+            else
+                taskList.add(new DownloadTask(downloadEntityDao, entity));
+        }
+
     }
 
     public interface DownloadUpdateListener

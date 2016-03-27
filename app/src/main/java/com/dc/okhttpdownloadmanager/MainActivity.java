@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.dc.downloadmanager.DownloadManager;
 import com.dc.downloadmanager.LoadState;
 import com.dc.downloadmanager.TransferTask;
 
+import java.io.File;
 import java.util.LinkedList;
 
 
@@ -40,6 +42,15 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         downloadManager = DownloadManager.getInstance(this.getApplicationContext());
         downloadManager.setUpdateListener(this);
         setListViewAdapter();
+
+    }
+
+    private static void deleteFilesByDirectory(File directory) {
+        if (directory != null && directory.exists() && directory.isDirectory()) {
+            for (File item : directory.listFiles()) {
+                item.delete();
+            }
+        }
     }
 
     void setListViewAdapter()
@@ -71,8 +82,18 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     @Override
     public void inputCompleted(String url, String fileName)
     {
-        url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
-        downloadManager.addTask(url, fileName);
+        //url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
+        String url1="https://github.com/nebulae-pan/OkHttpDownloadManager/archive/master.zip";
+        String url2="https://github.com/bxiaopeng/AndroidStudio/archive/master.zip";
+        String url3="https://github.com/romannurik/AndroidAssetStudio/archive/master.zip";
+        String url4="https://github.com/facebook/fresco/archive/master.zip";
+        String url5="https://github.com/bacy/volley/archive/master.zip";
+        //downloadManager.addTask(url, fileName);
+        downloadManager.addTask(url1, "1.zip");
+        //downloadManager.addTask(url2, "2.zip");
+        //downloadManager.addTask(url3, "3.zip");
+        //downloadManager.addTask(url4, "4.zip");
+        //downloadManager.addTask(url5, "5.zip");
     }
 
     @Override
@@ -80,30 +101,6 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     {
         adapter.notifyDataSetChanged();
     }
-
-    /*static class InnerHandler extends Handler
-    {
-        WeakReference<MainActivity> reference;
-        MainActivity activity;
-
-        public InnerHandler(MainActivity activity)
-        {
-            this.reference = new WeakReference<>(activity);
-            this.activity = reference.get();
-        }
-
-        @Override
-        public void handleMessage(Message msg)
-        {
-            switch (msg.what) {
-                case 1:
-                    activity.adapter.notifyDataSetChanged();
-            }
-            super.handleMessage(msg);
-        }
-    }*/
-
-
 
     /**
      * just sample
@@ -138,26 +135,45 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent)
+        public View getView(final int position, View convertView, ViewGroup parent)
         {
             if (convertView == null) {
                 convertView = ((Activity) context).getLayoutInflater().inflate(R.layout.item_download, parent, false);
             }
-            TransferTask tf = data.get(position);
+            final TransferTask tf = data.get(position);
             if (tf.getTaskSize() == 0) return convertView; //if taskSize isn't initial complete,post to getView
             ((TextView) convertView.findViewById(R.id.title)).setText(tf.getFileName());
-            ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int)(100*tf.getCompletedSize() / tf
+            ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int) (100 * tf.getCompletedSize()
+                    / tf
                     .getTaskSize()));
 
-            if (tf.getState() == LoadState.PAUSE)
-            {
+
+            if (tf.getState() == LoadState.PAUSE) {
                 ((Button) convertView.findViewById(R.id.operation)).setText("start");
             }
-            if (tf.getState() == LoadState.DOWNLOADING)
-            {
+            if (tf.getState() == LoadState.DOWNLOADING) {
                 ((Button) convertView.findViewById(R.id.operation)).setText("pause");
             }
+            (convertView.findViewById(R.id.operation)).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if (tf.getState() == LoadState.DOWNLOADING)
+                        DownloadManager.getInstance().pauseTask(position);
+                    else if (tf.getState() == LoadState.PAUSE)
+                        DownloadManager.getInstance().restartTask(position);
+                }
+            });
             return convertView;
         }
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        deleteFilesByDirectory(new File("/data/data/"
+            + this.getPackageName() + "/databases"));
     }
 }

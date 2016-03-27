@@ -1,4 +1,6 @@
 package com.dc.downloadmanager;
+import android.util.Log;
+
 import java.io.RandomAccessFile;
 
 import okhttp3.OkHttpClient;
@@ -55,6 +57,7 @@ abstract public class TransferTask implements Runnable
 
     public void setState(int state)
     {
+        Log.v("set","set"+state);
         this.state = state;
     }
 

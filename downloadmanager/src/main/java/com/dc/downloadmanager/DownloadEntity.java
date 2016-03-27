@@ -77,4 +77,16 @@ public class DownloadEntity {
         this.threadComplete = threadComplete;
     }
 
+    @Override
+    public String toString()
+    {
+        return "DownloadEntity{" +
+                "url='" + url + '\'' +
+                ", taskSize=" + taskSize +
+                ", completedSize=" + completedSize +
+                ", saveDirPath='" + saveDirPath + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", threadComplete='" + threadComplete + '\'' +
+                '}';
+    }
 }
