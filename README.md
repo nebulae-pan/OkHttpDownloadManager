@@ -3,7 +3,7 @@
 * a simple file download manager support by okHttp
 * support breakpoint download
 * support multi-thread download
-* custom parallel tasks' number and sub-thread number of a task
+* custom parallel tasks' number and sub-thread's number of a task
 
 ##usage
 ###simple download
