@@ -109,7 +109,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
         if (mManager == null) {
             synchronized (DownloadManager.class) {
                 if (mManager == null) {
-                    mManager = new DownloadManager(context, 3);
+                    mManager = new DownloadManager(context, 5);
                 }
             }
         }
