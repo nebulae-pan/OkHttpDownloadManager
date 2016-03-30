@@ -50,8 +50,8 @@ public class ThreadTask extends Thread
         Response response;
         try {
             response = client.newCall(request).execute();
-            Log.v("length",response.body().contentLength()+"");
-            Log.v("range",start+"-"+end);
+            //Log.v("length",response.body().contentLength()+"");
+            //Log.v("range"+url,start+"-"+end);
             bis = new BufferedInputStream(response.body().byteStream());
             file = new RandomAccessFile(fileSavePath, "rwd");
 

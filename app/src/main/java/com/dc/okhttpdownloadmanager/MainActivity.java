@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
 
     }
 
-    private static void deleteFilesByDirectory(File directory) {
+    private static void deleteFilesByDirectory(File directory)
+    {
         if (directory != null && directory.exists() && directory.isDirectory()) {
             for (File item : directory.listFiles()) {
                 item.delete();
@@ -83,11 +84,11 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     public void inputCompleted(String url, String fileName)
     {
         url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
-        String url1="https://github.com/nebulae-pan/OkHttpDownloadManager/archive/master.zip";
-        String url2="https://github.com/bxiaopeng/AndroidStudio/archive/master.zip";
-        String url3="https://github.com/romannurik/AndroidAssetStudio/archive/master.zip";
-        String url4="https://github.com/facebook/fresco/archive/master.zip";
-        String url5="https://github.com/bacy/volley/archive/master.zip";
+        String url1 = "https://github.com/nebulae-pan/OkHttpDownloadManager/archive/master.zip";
+        String url2 = "https://github.com/bxiaopeng/AndroidStudio/archive/master.zip";
+        String url3 = "https://github.com/romannurik/AndroidAssetStudio/archive/master.zip";
+        String url4 = "https://github.com/facebook/fresco/archive/master.zip";
+        String url5 = "https://github.com/bacy/volley/archive/master.zip";
         downloadManager.addTask(url, "123.apk");
         downloadManager.addTask(url1, "1.zip");
         downloadManager.addTask(url2, "2.zip");
@@ -144,14 +145,17 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
             if (tf.getTaskSize() == 0) return convertView; //if taskSize isn't initial complete,post to getView
             ((TextView) convertView.findViewById(R.id.title)).setText(tf.getFileName());
             ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int) (100 * tf.getCompletedSize()
-                    / tf
-                    .getTaskSize()));
-
+                    / tf.getTaskSize()));
+            if (tf.getState() == LoadState.PREPARE) {
+                (convertView.findViewById(R.id.operation)).setEnabled(false);
+                ((Button) convertView.findViewById(R.id.operation)).setText("connecting");
+            }
 
             if (tf.getState() == LoadState.PAUSE) {
                 ((Button) convertView.findViewById(R.id.operation)).setText("start");
             }
             if (tf.getState() == LoadState.DOWNLOADING) {
+                (convertView.findViewById(R.id.operation)).setEnabled(true);
                 ((Button) convertView.findViewById(R.id.operation)).setText("pause");
             }
             (convertView.findViewById(R.id.operation)).setOnClickListener(new View.OnClickListener()
@@ -174,6 +178,6 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     {
         super.onDestroy();
         deleteFilesByDirectory(new File("/data/data/"
-            + this.getPackageName() + "/databases"));
+                + this.getPackageName() + "/databases"));
     }
 }

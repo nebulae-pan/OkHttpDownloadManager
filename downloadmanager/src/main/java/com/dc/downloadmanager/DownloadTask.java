@@ -2,11 +2,8 @@ package com.dc.downloadmanager;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
