@@ -254,7 +254,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
             Log.e("dao", entity.toString());
             if (entity.getCompletedSize().equals(entity.getTaskSize()))
             {
-
+                //handle already downloaded files
             }
             else
                 taskList.add(new DownloadTask(downloadEntityDao, entity));

@@ -87,4 +87,15 @@ public class DownloadEntity {
         this.subThreadNum = subThreadNum;
     }
 
+    @Override
+    public String toString()
+    {
+        return "DownloadEntity{" +
+                ", taskSize=" + taskSize +
+                ", completedSize=" + completedSize +
+                ", saveDirPath='" + saveDirPath + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", threadComplete='" + threadComplete + '\'' +
+                '}';
+    }
 }
