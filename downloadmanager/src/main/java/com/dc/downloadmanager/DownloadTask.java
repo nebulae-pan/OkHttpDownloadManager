@@ -93,7 +93,7 @@ public class DownloadTask extends TransferTask
                 } else
                     //else get length from head content range or
                     //directly get by content length(request use Range: byte:0-)
-                    taskSize = Long.parseLong(Content_Range.substring(Content_Range.lastIndexOf("/")+1));
+                    taskSize = Long.parseLong(Content_Range.substring(Content_Range.lastIndexOf("/") + 1));
 
                 responseBody.close();
             }
@@ -122,11 +122,9 @@ public class DownloadTask extends TransferTask
                     break;
                 Thread.sleep(1000);
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             try {
                 if (file != null)
@@ -193,5 +191,6 @@ public class DownloadTask extends TransferTask
         }
         return sb.toString();
     }
+
 }
 

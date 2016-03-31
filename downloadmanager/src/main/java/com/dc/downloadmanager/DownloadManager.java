@@ -1,8 +1,12 @@
 package com.dc.downloadmanager;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -109,7 +113,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
         if (mManager == null) {
             synchronized (DownloadManager.class) {
                 if (mManager == null) {
-                    mManager = new DownloadManager(context, 5);
+                    mManager = new DownloadManager(context, 2);
                 }
             }
         }
@@ -262,4 +266,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     {
         void OnUIUpdate();
     }
+
+
+
 }

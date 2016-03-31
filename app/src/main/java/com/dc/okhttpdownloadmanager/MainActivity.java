@@ -1,8 +1,11 @@
 package com.dc.okhttpdownloadmanager;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         downloadManager = DownloadManager.getInstance(this.getApplicationContext());
         downloadManager.setUpdateListener(this);
         setListViewAdapter();
-
+        verifyStoragePermissions(this);
     }
 
     private static void deleteFilesByDirectory(File directory)
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     @Override
     public void inputCompleted(String url, String fileName)
     {
+
         url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
         String url1 = "https://github.com/nebulae-pan/OkHttpDownloadManager/archive/master.zip";
         String url2 = "https://github.com/bxiaopeng/AndroidStudio/archive/master.zip";
@@ -94,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         downloadManager.addTask(url3, "3.zip");
         downloadManager.addTask(url4, "4.zip");
         downloadManager.addTask(url5, "5.zip");
+
     }
 
     @Override
@@ -179,4 +184,32 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         deleteFilesByDirectory(new File("/data/data/"
                 + this.getPackageName() + "/databases"));
     }
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    /**
+     * Checks if the app has permission to write to device storage
+     *
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     * @param activity
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
+
 }
