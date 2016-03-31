@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -104,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     @Override
     public void OnUIUpdate()
     {
+        /*for (TransferTask tf : downloadManager.getTaskList()) {
+            Log.v("tag", tf.toString());
+        }*/
         adapter.notifyDataSetChanged();
     }
 
@@ -146,15 +150,14 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
                 convertView = ((Activity) context).getLayoutInflater().inflate(R.layout.item_download, parent, false);
             }
             final TransferTask tf = data.get(position);
-            if (tf.getTaskSize() == 0) return convertView; //if taskSize isn't initial complete,post to getView
+            //if (tf.getTaskSize() == 0) return convertView; //if taskSize isn't initial complete,post to getView
             ((TextView) convertView.findViewById(R.id.title)).setText(tf.getFileName());
-            ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int) (100 * tf.getCompletedSize()
-                    / tf.getTaskSize()));
+            ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int) (tf.getTaskSize() > 0 ? 100
+                    * tf.getCompletedSize() / tf.getTaskSize() : 0));
             if (tf.getState() == LoadState.PREPARE) {
                 (convertView.findViewById(R.id.operation)).setEnabled(false);
                 ((Button) convertView.findViewById(R.id.operation)).setText("connecting");
             }
-
             if (tf.getState() == LoadState.PAUSE) {
                 ((Button) convertView.findViewById(R.id.operation)).setText("start");
             }
@@ -181,9 +184,9 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     protected void onDestroy()
     {
         super.onDestroy();
-        deleteFilesByDirectory(new File("/data/data/"
-                + this.getPackageName() + "/databases"));
+        //deleteFilesByDirectory(new File("/data/data/"+ this.getPackageName() + "/databases"));
     }
+
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -193,12 +196,13 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
 
     /**
      * Checks if the app has permission to write to device storage
-     *
+     * <p/>
      * If the app does not has permission then the user will be prompted to grant permissions
      *
      * @param activity
      */
-    public static void verifyStoragePermissions(Activity activity) {
+    public static void verifyStoragePermissions(Activity activity)
+    {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 

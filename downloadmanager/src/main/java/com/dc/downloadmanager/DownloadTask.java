@@ -71,7 +71,6 @@ public class DownloadTask extends TransferTask
     {
         try {
             SDCardUtils.isExist(saveDirPath);
-            state = LoadState.START;
             if (completedSize == 0) {
                 Request request = new Request.Builder()
                         .url(url)
@@ -79,6 +78,9 @@ public class DownloadTask extends TransferTask
                         .build();
                 Response response = client.newCall(request).execute();
                 ResponseBody responseBody = response.body();
+
+                state = LoadState.START;
+
                 if (responseBody == null) {
                     System.out.println("resource not found");
                     return;

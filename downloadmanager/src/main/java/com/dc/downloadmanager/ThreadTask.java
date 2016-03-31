@@ -51,7 +51,7 @@ public class ThreadTask extends Thread
             //Log.v("length",response.body().contentLength()+"");
             //Log.v("range"+url,start+"-"+end);
             bis = new BufferedInputStream(response.body().byteStream());
-            file = new RandomAccessFile(fileSavePath, "rwd");
+            file = new RandomAccessFile(downloadTask.getSaveDirPath()+downloadTask.getFileName(), "rwd");
 
             byte[] buff = new byte[5 * 1024];
             file.seek(start);

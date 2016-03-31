@@ -266,7 +266,4 @@ public class DownloadManager implements DownloadTask.CompletedListener
     {
         void OnUIUpdate();
     }
-
-
-
 }
