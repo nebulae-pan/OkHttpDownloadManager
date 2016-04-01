@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
                 convertView = ((Activity) context).getLayoutInflater().inflate(R.layout.item_download, parent, false);
             }
             final TransferTask tf = data.get(position);
-            //if (tf.getTaskSize() == 0) return convertView; //if taskSize isn't initial complete,post to getView
+            //if taskSize isn't initial complete,post to getView
             ((TextView) convertView.findViewById(R.id.title)).setText(tf.getFileName());
             ((ProgressBar) convertView.findViewById(R.id.progressBar)).setProgress((int) (tf.getTaskSize() > 0 ? 100
                     * tf.getCompletedSize() / tf.getTaskSize() : 0));

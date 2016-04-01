@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
