@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         downloadManager.addTask(url3, "3.zip");
         downloadManager.addTask(url4, "4.zip");
         downloadManager.addTask(url5, "5.zip");
-
     }
 
     @Override

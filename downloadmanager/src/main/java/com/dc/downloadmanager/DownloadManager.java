@@ -46,7 +46,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
         executorService = Executors.newFixedThreadPool(this.nThread);
         taskList = new LinkedList<>();
         getDownloadTask();
-        this.nThread = nThread;
         downloadDao = getDaoSession(context).getDownloadEntityDao();
     }
 
@@ -203,8 +202,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     protected void ifNeedStopUpdateUI()
     {
         for (TransferTask task : taskList) {
-            if (task.getState() == LoadState.DOWNLOADING || task.getState() == LoadState.PREPARE || task.getState()
-                    == LoadState.START)
+            if (task.getState() == LoadState.DOWNLOADING || task.getState() == LoadState.PREPARE)
                 return;
         }
         stopUpdateUI();
