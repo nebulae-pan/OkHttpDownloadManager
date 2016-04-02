@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         listView = (ListView) findViewById(R.id.listView);
-        downloadManager = DownloadManager.getInstance(this.getApplicationContext());
+        DownloadManager.init(this.getApplicationContext());
+        downloadManager = DownloadManager.getInstance();
         downloadManager.setUpdateListener(this);
         setListViewAdapter();
         verifyStoragePermissions(this);

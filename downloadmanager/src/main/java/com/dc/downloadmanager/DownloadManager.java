@@ -1,12 +1,8 @@
 package com.dc.downloadmanager;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -44,18 +40,32 @@ public class DownloadManager implements DownloadTask.CompletedListener
     private DownloadManager(Context context, int nThread)
     {
         this.context = context;
-        init(nThread);
-    }
-
-    private void init(int nThread)
-    {
-        mHandler = new Handler(Looper.getMainLooper());
         this.nThread = nThread;
+
+        mHandler = new Handler(Looper.getMainLooper());
         executorService = Executors.newFixedThreadPool(this.nThread);
         taskList = new LinkedList<>();
         getDownloadTask();
         this.nThread = nThread;
         downloadDao = getDaoSession(context).getDownloadEntityDao();
+    }
+
+    static public void init(Context context)
+    {
+        if (mManager == null)
+            synchronized (DownloadManager.class) {
+                if (mManager == null)
+                    mManager = new DownloadManager(context, 3);
+            }
+    }
+
+    static public void init(Context context, int nThread)
+    {
+        if (mManager == null)
+            synchronized (DownloadManager.class) {
+                if (mManager == null)
+                    mManager = new DownloadManager(context, nThread);
+            }
     }
 
     public void addTask(String url, String fileName)
@@ -88,11 +98,9 @@ public class DownloadManager implements DownloadTask.CompletedListener
     public void pauseTask(int index)
     {
         DownloadTask task = (DownloadTask) taskList.get(index);
-        if (task != null)
-        {
+        if (task != null) {
             task.setState(LoadState.PAUSE);
-        }
-        else
+        } else
             Log.e("pauseTask", "task=null");
     }
 
@@ -106,18 +114,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
         taskList.remove(task);
         //删除数据库中的数据
         downloadDao.deleteByKey(url);
-    }
-
-    static public DownloadManager getInstance(Context context)
-    {
-        if (mManager == null) {
-            synchronized (DownloadManager.class) {
-                if (mManager == null) {
-                    mManager = new DownloadManager(context, 2);
-                }
-            }
-        }
-        return mManager;
     }
 
     static public DownloadManager getInstance()
@@ -252,11 +248,9 @@ public class DownloadManager implements DownloadTask.CompletedListener
         List<DownloadEntity> entityList = downloadEntityDao.loadAll();
         for (DownloadEntity entity : entityList) {
             Log.e("dao", entity.toString());
-            if (entity.getCompletedSize().equals(entity.getTaskSize()))
-            {
+            if (entity.getCompletedSize().equals(entity.getTaskSize())) {
                 //handle already downloaded files
-            }
-            else
+            } else
                 taskList.add(new DownloadTask(downloadEntityDao, entity));
         }
 

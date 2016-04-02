@@ -57,7 +57,6 @@ abstract public class TransferTask implements Runnable
 
     public void setState(int state)
     {
-        Log.v("set","set"+state);
         this.state = state;
     }
 
