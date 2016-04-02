@@ -81,19 +81,4 @@ abstract public class TransferTask implements Runnable
     @Override
     abstract public void run();
 
-    @Override
-    public String toString()
-    {
-        return "TransferTask{" +
-                "taskSize=" + taskSize +
-                ", completedSize=" + completedSize +
-                ", suffix='" + suffix + '\'' +
-                ", url='" + url + '\'' +
-                ", fileName='" + fileName + '\'' +
-                ", saveDirPath='" + saveDirPath + '\'' +
-                ", client=" + client +
-                ", file=" + file +
-                ", state=" + state +
-                '}';
-    }
 }
