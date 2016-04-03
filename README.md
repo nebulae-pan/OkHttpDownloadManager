@@ -23,14 +23,15 @@ After initialize , use getInstance() in anywhere and will get DownloadManager in
     DownloadManager manager = DownloadManager.getInstance();
 if you need show download tasks information at Activity, you can get downloading tasks list by
 
-    downloadManager.getTaskList();
+    ArrayList<TransferTask> list = downloadManager.getTaskList();
 return value is a list consist by class TransferTask , can use as the parameter of ListView/RecyclerView's Adapter.
 Implement interface DownloadManager.DownloadUpdateListener in Activity,and update UI
 
     @Override
     public void OnUIUpdate()
     {
-        adapter.notifyDataSetChanged();
+        //update operation, like
+        //adapter.notifyDataSetChanged();
     }
 
 ###other api
@@ -39,5 +40,9 @@ Implement interface DownloadManager.DownloadUpdateListener in Activity,and updat
     downloadManager.cancel(url);
     downloadManager.restart(url);
 
-###single task downloading
+###download demo
+####single task downloading
 ![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-21-214932.png)
+
+####exceed limit's tasks block
+![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-04-02-231252.png)
