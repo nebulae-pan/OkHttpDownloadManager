@@ -6,6 +6,9 @@
 * custom parallel tasks' number and sub-thread's number of a task
 
 ##usage
+add dependency
+
+    compile 'nebulae.library.wheel:downloadmanager:0.0.1'
 ###simple download
 firstly,add permission at AndroidManifest.xml
 
