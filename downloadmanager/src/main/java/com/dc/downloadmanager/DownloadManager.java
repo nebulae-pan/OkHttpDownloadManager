@@ -27,7 +27,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     private int nThread;
 
-    final Object updateLock = new Object();//更新界面进程的互斥锁
+    final Object updateLock = new Object();//update thread mutex lock
     boolean isUpdating = false;
     DownloadUpdateListener mDownloadUpdate;
 
@@ -69,7 +69,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     public void addTask(String url, String fileName)
     {
-        //注册完成事件，方便任务完成后将实例移出实例集合
+        //register accomplish callback , when task finish ,remove it from taskList
         DownloadTask task = new DownloadTask(fileName, url, SDCardUtils.getSDCardPath() + downLoadPath, downloadDao);
         task.setCompletedListener(this);
         taskList.add(task);
@@ -81,7 +81,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     {
         ((DownloadTask) taskList.get(index)).setCompletedListener(this);
         executorService.execute(taskList.get(index));
-        startUpdateUI();//若无更新线程，重新启动
+        startUpdateUI();//if there is no update thread , restart
     }
 
     /**
@@ -111,7 +111,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
         else
             Log.e("cancelTask", "task=null");
         taskList.remove(task);
-        //删除数据库中的数据
+        //delete the data in the database
         downloadDao.deleteByKey(url);
     }
 
@@ -156,7 +156,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
     }
 
     /**
-     * 需判断状态，全部暂停后停止更新界面
+     * estimate all tasks' state , if there is haven't downloading or preparing task ,stop this thread
      */
     Runnable updateUIByOneSecond = new Runnable()
     {

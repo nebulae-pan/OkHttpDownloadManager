@@ -11,7 +11,7 @@ public class DAOgenerator
         Schema schema = new Schema(2, "com.dc.downloadmanager");
         //addArticle(schema);
         addDownloadEntity(schema);
-        //DAO生成路径
+        //DAO generate path
         new DaoGenerator().generateAll(schema, "../OkhttpDownloadManager/downloadmanager/src/main/java");
 
     }

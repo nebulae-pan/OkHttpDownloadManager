@@ -14,7 +14,7 @@ import okhttp3.ResponseBody;
 
 /**
  * Created by pxh on 2016/2/11.
- * 传输过程中的任务信息
+ * task information
  */
 public class DownloadTask extends TransferTask
 {
@@ -24,7 +24,7 @@ public class DownloadTask extends TransferTask
     private DownloadEntityDao downloadDao;
     private CompletedListener completedListener;
     /**
-     * 保存的信息
+     * POJO information
      */
     private final DownloadEntity downloadEntity;
 
@@ -46,7 +46,7 @@ public class DownloadTask extends TransferTask
         downloadEntity.setSaveDirPath(saveDirPath);
         downloadEntity.setThreadComplete(generateThreadComplete(threadComplete));
         downloadEntity.setSubThreadNum(subThreadNum);
-        //新建任务
+        //new task
         this.downloadDao.insertOrReplace(downloadEntity);
     }
 
