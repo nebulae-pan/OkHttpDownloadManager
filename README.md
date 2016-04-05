@@ -3,7 +3,6 @@
 * a simple file download manager support by okHttp
 * support breakpoint download
 * support multi-thread download
-* custom parallel tasks' number and sub-thread's number of a task
 
 ##usage
 add dependency
@@ -42,10 +41,15 @@ Implement interface DownloadManager.DownloadUpdateListener in Activity,and updat
     downloadManager.pause(url);
     downloadManager.cancel(url);
     downloadManager.restart(url);
-
 ###download demo
 ####single task downloading
 ![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-21-214932.png)
 
 ####exceed limit's tasks block
 ![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-04-02-231252.png)
+
+![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-31-213811.png)
+
+####download completed
+![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-30-221358.png)
+
