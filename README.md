@@ -5,7 +5,7 @@
 * support multi-thread download
 
 ##usage
-add dependency
+add dependency in gradle
 
     compile 'nebulae.library.wheel:downloadmanager:0.0.1'
 ###simple download
@@ -14,15 +14,12 @@ firstly,add permission at AndroidManifest.xml
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-then,initial download manager use this.getApplicationContext() in Activity class.
-
-    DownloadManager.init(this.getApplicationContext());
-or in Application class.
-
-    DownloadManager.init(this);
-After initialize , use getInstance() in anywhere and will get DownloadManager instance.
-
-    DownloadManager manager = DownloadManager.getInstance();
+then use follow code to start your download
+    
+    DownloadManager.init(this);     //initial manager in Application
+    //DownloadManager.init(this.getApplicationContext()); or in Activity use getApplicationContext()
+    DownloadManager downloadManager = DownloadManager.getInstance(); //getInstance
+    downloadManager.addTask(url, fileName);     //start a download task
 if you need show download tasks information at Activity, you can get downloading tasks list by
 
     ArrayList<TransferTask> list = downloadManager.getTaskList();
@@ -38,9 +35,9 @@ Implement interface DownloadManager.DownloadUpdateListener in Activity,and updat
 
 ###other api
 
-    downloadManager.pause(url);
-    downloadManager.cancel(url);
-    downloadManager.restart(url);
+    downloadManager.pauseTask(url);
+    downloadManager.cancelTask(url);
+    downloadManager.reStart(url);
 ###download demo
 ####single task downloading
 ![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-21-214932.png)
