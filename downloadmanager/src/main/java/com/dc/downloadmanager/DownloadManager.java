@@ -265,5 +265,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
         {
             return this;
         }
+
     }
 }
