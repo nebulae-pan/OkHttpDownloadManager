@@ -258,4 +258,12 @@ public class DownloadManager implements DownloadTask.CompletedListener
     {
         void OnUIUpdate();
     }
+
+    public static class Builder
+    {
+        public Builder setTasksNumber()
+        {
+            return this;
+        }
+    }
 }
