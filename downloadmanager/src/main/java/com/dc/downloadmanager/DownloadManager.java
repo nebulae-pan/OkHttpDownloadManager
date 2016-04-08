@@ -48,13 +48,17 @@ public class DownloadManager implements DownloadTask.CompletedListener
     private DownloadManager(Context context, DownloadManagerConfig config)
     {
         this.context = context;
-        this.config = config;
-
+        checkConfig(config);
         mHandler = new Handler(Looper.getMainLooper());
         executorService = Executors.newFixedThreadPool(config.nThread);
         taskList = new LinkedList<>();
         getDownloadTask();
         downloadDao = getDaoSession(context).getDownloadEntityDao();
+    }
+
+    private void checkConfig(DownloadManagerConfig config)
+    {
+
     }
 
     public void addTask(String url, String fileName)
@@ -238,28 +242,4 @@ public class DownloadManager implements DownloadTask.CompletedListener
         void OnUIUpdate();
     }
 
-    public static class DownloadManagerConfig
-    {
-        int nThread;
-        int subThreadNumber;
-        String downloadSavePath;
-
-        public DownloadManagerConfig setMaxTasksNumber(int threadNumber)
-        {
-            this.nThread = threadNumber;
-            return this;
-        }
-
-        public DownloadManagerConfig setSavePath(String savePath)
-        {
-            this.downloadSavePath = savePath;
-            return this;
-        }
-
-        public DownloadManagerConfig setSingleTaskThreadNumber(int threadNumber)
-        {
-            this.subThreadNumber = threadNumber;
-            return this;
-        }
-    }
 }

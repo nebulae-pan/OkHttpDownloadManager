@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dc.downloadmanager.DownloadManager;
+import com.dc.downloadmanager.DownloadManagerConfig;
 import com.dc.downloadmanager.LoadState;
 import com.dc.downloadmanager.TransferTask;
 
@@ -42,8 +43,12 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         listView = (ListView) findViewById(R.id.listView);
+        DownloadManagerConfig config = new DownloadManagerConfig()
+                .setMaxTasksNumber(3)
+                .setSingleTaskThreadNumber(3)
+                .setSavePath("");
 
-        DownloadManager.init(this.getApplicationContext(),new DownloadManager.DownloadManagerConfig());
+        DownloadManager.init(this.getApplicationContext(),config);
         downloadManager = DownloadManager.getInstance();
         downloadManager.setUpdateListener(this);
         setListViewAdapter();
