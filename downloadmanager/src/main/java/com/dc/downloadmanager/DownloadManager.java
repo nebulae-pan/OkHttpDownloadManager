@@ -58,7 +58,15 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     private void checkConfig(DownloadManagerConfig config)
     {
-
+        if (config.nThread > 10)
+            config.setMaxTasksNumber(10);
+        if (config.nThread <= 0)
+            config.setMaxTasksNumber(1);
+        if (config.subThreadNumber > 5)
+            config.setSingleTaskThreadNumber(5);
+        if (config.subThreadNumber <= 0)
+            config.setSingleTaskThreadNumber(1);
+        this.config = config;
     }
 
     public void addTask(String url, String fileName)
@@ -81,6 +89,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     /**
      * Can get downloading task list
+     *
      * @return list of TransferTaskz
      */
     public LinkedList<TransferTask> getTaskList()
@@ -198,7 +207,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     /**
      * get DaoMaster
-     *
      */
     public static DaoMaster getDaoMaster(Context context)
     {

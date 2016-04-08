@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +23,6 @@ import com.dc.downloadmanager.DownloadManagerConfig;
 import com.dc.downloadmanager.LoadState;
 import com.dc.downloadmanager.TransferTask;
 
-import java.io.File;
 import java.util.LinkedList;
 
 
@@ -48,21 +46,21 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
                 .setSingleTaskThreadNumber(3)
                 .setSavePath("");
 
-        DownloadManager.init(this.getApplicationContext(),config);
+        DownloadManager.init(this.getApplicationContext(), config);
         downloadManager = DownloadManager.getInstance();
         downloadManager.setUpdateListener(this);
         setListViewAdapter();
         verifyStoragePermissions(this);
     }
 
-    private static void deleteFilesByDirectory(File directory)
-    {
-        if (directory != null && directory.exists() && directory.isDirectory()) {
-            for (File item : directory.listFiles()) {
-                item.delete();
-            }
-        }
-    }
+//    private static void deleteFilesByDirectory(File directory)
+//    {
+//        if (directory != null && directory.exists() && directory.isDirectory()) {
+//            for (File item : directory.listFiles()) {
+//                item.delete();
+//            }
+//        }
+//    }
 
     void setListViewAdapter()
     {
@@ -93,19 +91,18 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     @Override
     public void inputCompleted(String url, String fileName)
     {
-
-        url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
+        /*url = "http://apk.hiapk.com/web/api.do?qt=8051&id=716";
         String url1 = "https://github.com/nebulae-pan/OkHttpDownloadManager/archive/master.zip";
         String url2 = "https://github.com/bxiaopeng/AndroidStudio/archive/master.zip";
         String url3 = "https://github.com/romannurik/AndroidAssetStudio/archive/master.zip";
         String url4 = "https://github.com/facebook/fresco/archive/master.zip";
-        String url5 = "https://github.com/bacy/volley/archive/master.zip";
-        downloadManager.addTask(url, "123.apk");
-        downloadManager.addTask(url1, "1.zip");
-        downloadManager.addTask(url2, "2.zip");
-        downloadManager.addTask(url3, "3.zip");
-        downloadManager.addTask(url4, "4.zip");
-        downloadManager.addTask(url5, "5.zip");
+        String url5 = "https://github.com/bacy/volley/archive/master.zip";*/
+        downloadManager.addTask(url, fileName);
+//        downloadManager.addTask(url1, "1.zip");
+//        downloadManager.addTask(url2, "2.zip");
+//        downloadManager.addTask(url3, "3.zip");
+//        downloadManager.addTask(url4, "4.zip");
+//        downloadManager.addTask(url5, "5.zip");
     }
 
     @Override
@@ -199,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
 
     /**
      * Checks if the app has permission to write to device storage
-     * <p/>
+     * <p>
      * If the app does not has permission then the user will be prompted to grant permissions
      *
      * @param activity
