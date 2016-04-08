@@ -16,8 +16,12 @@ firstly,add permission at AndroidManifest.xml
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
 then use follow code to start your download
     
-    DownloadManager.init(this);     //initial manager in Application
-    //DownloadManager.init(this.getApplicationContext()); or in Activity use getApplicationContext()
+    DownloadManagerConfig config = new DownloadManagerConfig()  //get Config
+                    .setMaxTasksNumber(3)                       //Config Max concurrent numbers of tasks
+                    .setSingleTaskThreadNumber(3)               //Config the threads' number of single task
+                    .setSavePath("");                           //Config the Path to save files
+    DownloadManager.init(this.getApplicationContext(), config);      //initial manager in Application
+    //DownloadManager.init(this.getApplicationContext(), config); or in Activity use getApplicationContext()
     DownloadManager downloadManager = DownloadManager.getInstance(); //getInstance
     downloadManager.addTask(url, fileName);     //start a download task
 if you need show download tasks information at Activity, you can get downloading tasks list by
