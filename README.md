@@ -1,6 +1,6 @@
 # OkHttpDownloadManager v1.0
 ##introduction
-* a simple file download manager support by okHttp
+* a file download manager support by okHttp
 * support breakpoint download
 * support multi-thread download
 
