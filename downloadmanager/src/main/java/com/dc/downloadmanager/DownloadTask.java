@@ -19,7 +19,7 @@ import okhttp3.ResponseBody;
 public class DownloadTask extends TransferTask
 {
     Handler mHandler;
-    private int subThreadNum = 3;
+    private int subThreadNum;
     private long[] threadComplete;
     private DownloadEntityDao downloadDao;
     private CompletedListener completedListener;
@@ -28,7 +28,7 @@ public class DownloadTask extends TransferTask
      */
     private final DownloadEntity downloadEntity;
 
-    public DownloadTask(String fileName, String url, String saveDirPath, DownloadEntityDao downloadDao)
+    public DownloadTask(String fileName, String url, String saveDirPath,int subThreadNum, DownloadEntityDao downloadDao)
     {
         this.url = url;
         this.saveDirPath = saveDirPath;
@@ -37,6 +37,7 @@ public class DownloadTask extends TransferTask
         this.suffix = obtainSuffix();
         this.downloadDao = downloadDao;
         this.threadComplete = new long[3];
+        this.subThreadNum = subThreadNum;
         this.mHandler = new Handler(Looper.getMainLooper());
         downloadEntity = new DownloadEntity();
         downloadEntity.setCompletedSize(0L);

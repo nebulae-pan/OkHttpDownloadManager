@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         listView = (ListView) findViewById(R.id.listView);
-        DownloadManager.init(this.getApplicationContext());
+
+        DownloadManager.init(this.getApplicationContext(),new DownloadManager.DownloadManagerConfig());
         downloadManager = DownloadManager.getInstance();
         downloadManager.setUpdateListener(this);
         setListViewAdapter();
@@ -105,14 +106,11 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
     @Override
     public void OnUIUpdate()
     {
-        /*for (TransferTask tf : downloadManager.getTaskList()) {
-            Log.v("tag", tf.toString());
-        }*/
         adapter.notifyDataSetChanged();
     }
 
     /**
-     * just sample
+     * just a sample
      */
     static class Adapter extends BaseAdapter
     {

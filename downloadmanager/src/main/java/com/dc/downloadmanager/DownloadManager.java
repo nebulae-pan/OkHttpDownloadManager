@@ -17,15 +17,14 @@ import java.util.concurrent.Executors;
  */
 public class DownloadManager implements DownloadTask.CompletedListener
 {
-    static DownloadManager mManager;
     Context context;
+
+    static DownloadManager mManager;
     static private DaoMaster daoMaster;
     static private DaoSession daoSession;
     private DownloadEntityDao downloadDao;
 
-    String downLoadPath = "";
-
-    private int nThread;
+    private DownloadManagerConfig config;
 
     final Object updateLock = new Object();//update thread mutex lock
     boolean isUpdating = false;
@@ -37,40 +36,32 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     ExecutorService executorService;
 
-    private DownloadManager(Context context, int nThread)
+    static public void init(Context context, DownloadManagerConfig config)
+    {
+        if (mManager == null)
+            synchronized (DownloadManager.class) {
+                if (mManager == null)
+                    mManager = new DownloadManager(context, config);
+            }
+    }
+
+    private DownloadManager(Context context, DownloadManagerConfig config)
     {
         this.context = context;
-        this.nThread = nThread;
+        this.config = config;
 
         mHandler = new Handler(Looper.getMainLooper());
-        executorService = Executors.newFixedThreadPool(this.nThread);
+        executorService = Executors.newFixedThreadPool(config.nThread);
         taskList = new LinkedList<>();
         getDownloadTask();
         downloadDao = getDaoSession(context).getDownloadEntityDao();
     }
 
-    static public void init(Context context)
-    {
-        if (mManager == null)
-            synchronized (DownloadManager.class) {
-                if (mManager == null)
-                    mManager = new DownloadManager(context, 3);
-            }
-    }
-
-    static public void init(Context context, int nThread)
-    {
-        if (mManager == null)
-            synchronized (DownloadManager.class) {
-                if (mManager == null)
-                    mManager = new DownloadManager(context, nThread);
-            }
-    }
-
     public void addTask(String url, String fileName)
     {
         //register accomplish callback , when task finish ,remove it from taskList
-        DownloadTask task = new DownloadTask(fileName, url, SDCardUtils.getSDCardPath() + downLoadPath, downloadDao);
+        DownloadTask task = new DownloadTask(fileName, url, SDCardUtils.getSDCardPath() + config.downloadSavePath,
+                config.subThreadNumber, downloadDao);
         task.setCompletedListener(this);
         taskList.add(task);
         executorService.execute(task);
@@ -86,8 +77,7 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     /**
      * Can get downloading task list
-     *
-     * @return
+     * @return list of TransferTaskz
      */
     public LinkedList<TransferTask> getTaskList()
     {
@@ -122,11 +112,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
         return mManager;
     }
 
-    public void setThreadNum(int nThread)
-    {
-        this.nThread = nThread;
-    }
-
     private DownloadTask getTask(String url)
     {
         for (TransferTask task : taskList) {
@@ -141,7 +126,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
     @Override
     public void isFinished(String url)
     {
-        Log.v("task finished", "task : " + url + " download completed");
         DownloadTask task = getTask(url);
         if (task != null)
             taskList.remove(task);
@@ -211,8 +195,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
     /**
      * get DaoMaster
      *
-     * @param context
-     * @return
      */
     public static DaoMaster getDaoMaster(Context context)
     {
@@ -225,9 +207,6 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     /**
      * get DaoSession
-     *
-     * @param context
-     * @return
      */
     public static DaoSession getDaoSession(Context context)
     {
@@ -259,12 +238,28 @@ public class DownloadManager implements DownloadTask.CompletedListener
         void OnUIUpdate();
     }
 
-    public static class Builder
+    public static class DownloadManagerConfig
     {
-        public Builder setTasksNumber()
+        int nThread;
+        int subThreadNumber;
+        String downloadSavePath;
+
+        public DownloadManagerConfig setMaxTasksNumber(int threadNumber)
         {
+            this.nThread = threadNumber;
             return this;
         }
 
+        public DownloadManagerConfig setSavePath(String savePath)
+        {
+            this.downloadSavePath = savePath;
+            return this;
+        }
+
+        public DownloadManagerConfig setSingleTaskThreadNumber(int threadNumber)
+        {
+            this.subThreadNumber = threadNumber;
+            return this;
+        }
     }
 }
