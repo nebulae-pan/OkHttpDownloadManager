@@ -9,41 +9,18 @@ import okhttp3.OkHttpClient;
  * Created by pxh on 2016/2/16.
  *
  */
-abstract public class TransferTask implements Runnable
+abstract public class TransferTask extends TaskInfo implements Runnable
 {
-    protected long taskSize;
-    protected long completedSize;
     protected String suffix;
 
     protected String url;
 
-    protected String fileName;
     protected String saveDirPath;
     protected OkHttpClient client;
 
     RandomAccessFile file;
 
     int state = LoadState.PREPARE;
-
-    public long getTaskSize()
-    {
-        return taskSize;
-    }
-
-    public long getCompletedSize()
-    {
-        return completedSize;
-    }
-
-    public String getFileName()
-    {
-        return fileName;
-    }
-
-    public void setFileName(String fileName)
-    {
-        this.fileName = fileName;
-    }
 
     public void setSaveDirPath(String saveDirPath)
     {

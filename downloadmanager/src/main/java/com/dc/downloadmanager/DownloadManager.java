@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -236,13 +237,23 @@ public class DownloadManager implements DownloadTask.CompletedListener
         DownloadEntityDao downloadEntityDao = getDaoSession(context).getDownloadEntityDao();
         List<DownloadEntity> entityList = downloadEntityDao.loadAll();
         for (DownloadEntity entity : entityList) {
-            Log.e("dao", entity.toString());
-            if (entity.getCompletedSize().equals(entity.getTaskSize())) {
-                //handle already downloaded files
-            } else
+            if (!entity.getCompletedSize().equals(entity.getTaskSize())) {
                 taskList.add(new DownloadTask(downloadEntityDao, entity));
+            }
         }
+    }
 
+    public ArrayList<TaskInfo> getCompletedTasks()
+    {
+        ArrayList<TaskInfo> tasks = new ArrayList<>();
+        DownloadEntityDao downloadEntityDao = getDaoSession(context).getDownloadEntityDao();
+        List<DownloadEntity> entityList = downloadEntityDao.loadAll();
+        for (DownloadEntity entity : entityList) {
+            if (entity.getCompletedSize().equals(entity.getTaskSize())) {
+                tasks.add(new TaskInfo(entity.getFileName(), entity.getTaskSize(), entity.getCompletedSize()));
+            }
+        }
+        return tasks;
     }
 
     public interface DownloadUpdateListener
