@@ -16,14 +16,14 @@ firstly,add permission at AndroidManifest.xml
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
 then use follow code to start your download
     
-    DownloadManagerConfig config = new DownloadManagerConfig()  //get Config
-                    .setMaxTasksNumber(3)                       //Config Max concurrent numbers of tasks
-                    .setSingleTaskThreadNumber(3)               //Config the threads' number of single task
-                    .setSavePath("");                           //Config the Path to save files
-    DownloadManager.init(this.getApplicationContext(), config);      //initial manager in Application
+    DownloadManagerConfig config = new DownloadManagerConfig()          //get Config
+                    .setMaxTasksNumber(3)                               //Config Max concurrent numbers of tasks
+                    .setSingleTaskThreadNumber(3)                       //Config the threads' number of single task
+                    .setSavePath("");                                   //Config the Path to save files
+    DownloadManager.init(this.getApplicationContext(), config);         //initial manager in Application
     //DownloadManager.init(this.getApplicationContext(), config); or in Activity use getApplicationContext()
-    DownloadManager downloadManager = DownloadManager.getInstance(); //getInstance
-    downloadManager.addTask(url, fileName);     //start a download task
+    DownloadManager downloadManager = DownloadManager.getInstance();    //getInstance
+    downloadManager.addTask(url, fileName);                             //start a download task
 if you need show download tasks information at Activity, you can get downloading tasks list by
 
     ArrayList<TransferTask> list = downloadManager.getTaskList();
@@ -39,9 +39,11 @@ Implement interface DownloadManager.DownloadUpdateListener in Activity,and updat
 
 ###other api
 
-    downloadManager.pauseTask(url);
-    downloadManager.cancelTask(url);
-    downloadManager.reStart(url);
+    downloadManager.pauseTask(url);     //pause a task is being download
+    downloadManager.cancelTask(url);    //cancel a task
+    downloadManager.reStart(url);       //restart a paused task
+    downloadManager.getCompletedTasks();//get completed tasks' list
+    downloadManager.deleteAllData();    //clear data
 ###download demo
 ####single task downloading
 ![single download task](https://github.com/nebulae-pan/OkHttpDownloadManager/blob/master/device-2016-03-21-214932.png)

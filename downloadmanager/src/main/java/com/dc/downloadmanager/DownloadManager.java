@@ -53,8 +53,8 @@ public class DownloadManager implements DownloadTask.CompletedListener
         mHandler = new Handler(Looper.getMainLooper());
         executorService = Executors.newFixedThreadPool(config.nThread);
         taskList = new LinkedList<>();
-        getDownloadTask();
         downloadDao = getDaoSession(context).getDownloadEntityDao();
+        getDownloadTask();
     }
 
     private void checkConfig(DownloadManagerConfig config)
@@ -234,11 +234,10 @@ public class DownloadManager implements DownloadTask.CompletedListener
 
     private void getDownloadTask()
     {
-        DownloadEntityDao downloadEntityDao = getDaoSession(context).getDownloadEntityDao();
-        List<DownloadEntity> entityList = downloadEntityDao.loadAll();
+        List<DownloadEntity> entityList = downloadDao.loadAll();
         for (DownloadEntity entity : entityList) {
             if (!entity.getCompletedSize().equals(entity.getTaskSize())) {
-                taskList.add(new DownloadTask(downloadEntityDao, entity));
+                taskList.add(new DownloadTask(downloadDao, entity));
             }
         }
     }
@@ -246,14 +245,28 @@ public class DownloadManager implements DownloadTask.CompletedListener
     public ArrayList<TaskInfo> getCompletedTasks()
     {
         ArrayList<TaskInfo> tasks = new ArrayList<>();
-        DownloadEntityDao downloadEntityDao = getDaoSession(context).getDownloadEntityDao();
-        List<DownloadEntity> entityList = downloadEntityDao.loadAll();
+        List<DownloadEntity> entityList = downloadDao.loadAll();
         for (DownloadEntity entity : entityList) {
             if (entity.getCompletedSize().equals(entity.getTaskSize())) {
                 tasks.add(new TaskInfo(entity.getFileName(), entity.getTaskSize(), entity.getCompletedSize()));
             }
         }
         return tasks;
+    }
+
+    public void deleteAllSData()
+    {
+        downloadDao.deleteAll();
+    }
+
+    public void deleteData(String key)
+    {
+        downloadDao.deleteByKey(key);
+    }
+
+    public void deleteData(DownloadEntity entity)
+    {
+        downloadDao.delete(entity);
     }
 
     public interface DownloadUpdateListener
