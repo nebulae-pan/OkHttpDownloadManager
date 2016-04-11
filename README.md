@@ -7,7 +7,7 @@
 ##usage
 add dependency in gradle
 
-    compile 'nebulae.library.wheel:downloadmanager:0.0.1'
+    compile 'nebulae.library.wheel:downloadmanager:1.0.1'
 ###simple download
 firstly,add permission at AndroidManifest.xml
 

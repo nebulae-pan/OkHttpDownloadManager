@@ -53,15 +53,6 @@ public class MainActivity extends AppCompatActivity implements TaskConfirmDialog
         verifyStoragePermissions(this);
     }
 
-//    private static void deleteFilesByDirectory(File directory)
-//    {
-//        if (directory != null && directory.exists() && directory.isDirectory()) {
-//            for (File item : directory.listFiles()) {
-//                item.delete();
-//            }
-//        }
-//    }
-
     void setListViewAdapter()
     {
         adapter = new Adapter(this, downloadManager.getTaskList());
