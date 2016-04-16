@@ -36,7 +36,7 @@ Implement interface DownloadManager.DownloadUpdateListener in Activity,and updat
         //update operation, like
         //adapter.notifyDataSetChanged();
     }
-
+    
 ###other api
 
     downloadManager.pauseTask(url);     //pause a task is being download
