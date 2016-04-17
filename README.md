@@ -36,6 +36,11 @@ Implement interface DownloadManager.DownloadUpdateListener in Activity,and updat
         //update operation, like
         //adapter.notifyDataSetChanged();
     }
+    
+    
+###require
+
+api level 10+
 
 ###other api
 
