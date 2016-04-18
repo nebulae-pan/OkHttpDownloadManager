@@ -1,4 +1,4 @@
-# OkHttpDownloadManager v1.0
+# OkHttpDownloadManager v1.0.1
 ##introduction
 * a file download manager support by okHttp
 * support breakpoint download
@@ -20,8 +20,8 @@ then use follow code to start your download
                     .setMaxTasksNumber(3)                               
                     .setSingleTaskThreadNumber(3)                       
                     .setSavePath("");                                   
-    DownloadManager.init(this.getApplicationContext(), config);         //initial manager in Application
-    //DownloadManager.init(this, config); or in Activity use getApplicationContext()
+    DownloadManager.init(this, config);                                 //initial manager in Application
+            //DownloadManager.init(this.getApplicationContext(), config); or in Activity use getApplicationContext()
     DownloadManager downloadManager = DownloadManager.getInstance();    //getInstance
     downloadManager.addTask(url, fileName);                             //start a download task
 if you need show downloading tasks information at Activity, you can get downloading tasks list by
