@@ -18,16 +18,16 @@ then use follow code to start your download
     
     DownloadManagerConfig config = new DownloadManagerConfig()          //get Config
                     .setMaxTasksNumber(3)                               //Config Max concurrent numbers of tasks
-                    .setSingleTaskThreadNumber(3)                       
-                    .setSavePath("");                                   
-    DownloadManager.init(this, config);                                 //initial manager in Application
+                    .setSingleTaskThreadNumber(3)                       //Config the threads' number of single task
+                    .setSavePath("");                                   //Config the Path to save files
+    DownloadManager.init(this.getApplicationContext(), config);         //initial manager in Application
     //DownloadManager.init(this.getApplicationContext(), config); or in Activity use getApplicationContext()
     DownloadManager downloadManager = DownloadManager.getInstance();    //getInstance
     downloadManager.addTask(url, fileName);                             //start a download task
-if you need show downloading tasks information at Activity, you can get downloading tasks list by
+if you need show download tasks information at Activity, you can get downloading tasks list by
 
     ArrayList<TransferTask> list = downloadManager.getTaskList();
-return value is a list consist of class TransferTask , can used as the parameter of ListView/RecyclerView's Adapter.
+return value is a list consist by class TransferTask , can use as the parameter of ListView/RecyclerView's Adapter.
 Implement interface DownloadManager.DownloadUpdateListener in Activity,and update UI
 
     @Override
@@ -36,7 +36,7 @@ Implement interface DownloadManager.DownloadUpdateListener in Activity,and updat
         //update operation, like
         //adapter.notifyDataSetChanged();
     }
-    
+
 ###other api
 
     downloadManager.pauseTask(url);     //pause a task is being download
